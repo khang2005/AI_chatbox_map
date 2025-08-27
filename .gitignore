@@ -1,0 +1,14 @@
+# Ignore ALL .env files anywhere
+**/.env
+**/.env*
+
+# Python cache
+**/__pycache__/
+**/*.py[cod]
+
+# Node modules
+frontend/node_modules/
+
+# IDE files
+.vscode/
+.idea/
