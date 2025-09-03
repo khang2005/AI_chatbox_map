@@ -12,3 +12,5 @@ frontend/node_modules/
 # IDE files
 .vscode/
 .idea/
+#ai agent file
+AGENTS.md
