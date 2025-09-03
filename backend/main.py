@@ -1,84 +1,57 @@
-from fastapi import FastAPI, HTTPException
+from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 import google.generativeai as genai
-import requests
 import os
 from dotenv import load_dotenv
-from typing import Optional
 
-# Load environment variables
+# Load environment variables first
 load_dotenv()
-
-# Initialize APIs
 genai.configure(api_key=os.getenv("GEMINI_API_KEY"))
-GOOGLE_MAPS_API_KEY = os.getenv("GOOGLE_MAPS_API_KEY")
 
+# Create FastAPI app instance
 app = FastAPI()
 
-# CORS Setup
+# Configure CORS
 app.add_middleware(
     CORSMiddleware,
     allow_origins=["*"],
     allow_methods=["*"],
     allow_headers=["*"],
 )
-
-def search_places(query: str, location: Optional[dict] = None, radius: int = 5000):
-    """Search locations using Google Places API"""
-    params = {
-        "query": query,
-        "key": GOOGLE_MAPS_API_KEY
-    }
-    if location:
-        params["location"] = f"{location['lat']},{location['lng']}"
-        params["radius"] = radius
-    
-    response = requests.get(
-        "https://maps.googleapis.com/maps/api/place/textsearch/json",
-        params=params
-    )
-    return response.json()
-
 @app.post("/api/chat")
 async def chat(message: dict):
+    user_query = message.get("text", "")
+    
     try:
-        user_query = message.get("text", "")
-        model = genai.GenerativeModel('gemini-pro')
+        # Use Gemini 2.0 Flash
+        model = genai.GenerativeModel('gemini-2.0-flash')
         
-        # Location-based queries
-        location_keywords = ["near me", "find", "where is", "nearby"]
-        if any(kw in user_query.lower() for kw in location_keywords):
-            places_data = search_places(user_query)
-            
-            prompt = f"""
-            Respond as a friendly travel assistant. 
-            User asked: "{user_query}"
-            
-            Found these places:
-            {chr(10).join([f"- {p['name']} ({p.get('rating', '?')}★)" for p in places_data.get('results', [])[:3]])}
-            
-            Guidelines:
-            1. Mention top 3 options
-            2. Include ratings if available
-            3. Add emojis when appropriate
-            """
-            
-            response = model.generate_content(prompt)
-            
-            return {
-                "response": response.text,
-                "places": places_data.get("results", [])
-            }
+        # Enhanced prompt for better responses
+        prompt = f"""
+        You are a helpful map assistant. Respond to the user's query about locations, places, or directions.
+        Keep responses concise and friendly.
         
-        # General queries
-        response = model.generate_content(user_query)
-        return {"response": response.text}
+        User query: {user_query}
+        Response:
+        """
+        
+        response = model.generate_content(prompt)
+        
+        return {
+            "response": response.text,
+            "places": []  # We'll add map data later
+        }
         
     except Exception as e:
-        raise HTTPException(
-            status_code=500,
-            detail=f"AI service error: {str(e)}"
-        )
+        # Minimal fallback without mock data
+        return {
+            "response": "I'm currently unable to process your request. Please try again later.",
+            "places": []
+        }
+
+@app.get("/")
+async def root():
+    return {"message": "AI Map Chatbot API is running!"}
 
 if __name__ == "__main__":
     import uvicorn
