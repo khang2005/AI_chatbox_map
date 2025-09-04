@@ -49,3 +49,4 @@ The application is composed of two main services:
     ```
 
 The frontend will be available at `http://localhost:3000` and the backend at `http://localhost:8000`.
+<img width="1918" height="903" alt="Screenshot 2025-09-03 173952" src="https://github.com/user-attachments/assets/65fb0512-c5ea-4632-a144-b261568be84e" />
