@@ -160,62 +160,11 @@ resource "azurerm_linux_virtual_machine" "k3s_master" {
   tags = var.tags
 }
 
-# k3s worker nodes
-resource "azurerm_network_interface" "k3s_worker" {
-  count               = var.worker_node_count
-  name                = "${var.project_name}-worker-${count.index + 1}-nic"
-  location            = azurerm_resource_group.k3s.location
-  resource_group_name = azurerm_resource_group.k3s.name
-
-  ip_configuration {
-    name                          = "internal"
-    subnet_id                     = azurerm_subnet.k3s.id
-    private_ip_address_allocation = "Dynamic"
-  }
-
-  tags = var.tags
-}
 
 
 
-resource "azurerm_linux_virtual_machine" "k3s_worker" {
-  count               = var.worker_node_count
-  name                = "${var.project_name}-worker-${count.index + 1}"
-  resource_group_name = azurerm_resource_group.k3s.name
-  location            = azurerm_resource_group.k3s.location
-  size                = var.vm_size
-  admin_username      = var.admin_username
-  disable_password_authentication = true
 
-  network_interface_ids = [
-    azurerm_network_interface.k3s_worker[count.index].id,
-  ]
 
-  admin_ssh_key {
-    username   = var.admin_username
-    public_key = var.ssh_public_key
-  }
-
-  os_disk {
-    caching              = "ReadWrite"
-    storage_account_type = "Standard_LRS"
-  }
-
-  source_image_reference {
-    publisher = "Canonical"
-    offer     = "0001-com-ubuntu-server-jammy"
-    sku       = "22_04-lts-gen2"
-    version   = "latest"
-  }
-
-  custom_data = base64encode(templatefile("${path.module}/k3s-worker-init.sh", {
-    master_ip = azurerm_network_interface.k3s_master.private_ip_address
-  }))
-
-  tags = var.tags
-
-  depends_on = [azurerm_linux_virtual_machine.k3s_master]
-}
 
 # Azure DNS Zone
 resource "azurerm_dns_zone" "main" {

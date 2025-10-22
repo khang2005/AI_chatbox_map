@@ -14,3 +14,10 @@ frontend/node_modules/
 .idea/
 #ai agent file
 AGENTS.md
+**/agents.md
+**/.venv/
+**/venv/
+**/.next/
+**/terraform.tfstate
+**/terraform.tfstate.backup
+

@@ -25,7 +25,7 @@ variable "vm_size" {
 variable "worker_node_count" {
   description = "Number of worker nodes"
   type        = number
-  default     = 2
+  default     = 0
 }
 
 variable "admin_username" {
@@ -37,7 +37,7 @@ variable "admin_username" {
 variable "ssh_public_key" {
   description = "SSH public key for VM access"
   type        = string
-  # You'll need to set this when running terraform
+  
 }
 
 variable "gemini_api_key" {
