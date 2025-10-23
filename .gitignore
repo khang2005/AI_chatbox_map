@@ -1,33 +1,36 @@
-# Ignore ALL .env files anywhere
+# Python
+**/__pycache__/
+**/*.py[cod]
 **/.env
 **/.env*
 
-# Python cache
-**/__pycache__/
-**/*.py[cod]
+venv/
+.venv/
 
-# Node modules
-frontend/node_modules/
+# Node.js
+node_modules/
 
-# IDE files
+# Next.js
+.next/
+
+# IDE
 .vscode/
 .idea/
-#ai agent file
-AGENTS.md
-**/agents.md
-**/.venv/
-**/venv/
-**/.next/
-**/terraform.tfstate
-**/terraform.tfstate.backup
 
-.terraform/
+# AI agent
+AGENTS.md
+
+# Terraform
+**/.terraform/*
 *.tfstate
 *.tfstate.*
-.terraform.tfstate.lock.info
 crash.log
 crash.*.log
-.terraform/
-*.tfstate
-*.tfstate.*
-.tfvars
+*.tfvars
+*.tfvars.json
+override.tf
+override.tf.json
+*_override.tf
+*_override.tf.json
+.terraformrc
+terraform.rc
