@@ -27,3 +27,7 @@ AGENTS.md
 .terraform.tfstate.lock.info
 crash.log
 crash.*.log
+.terraform/
+*.tfstate
+*.tfstate.*
+.tfvars
