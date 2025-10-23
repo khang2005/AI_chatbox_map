@@ -21,3 +21,9 @@ AGENTS.md
 **/terraform.tfstate
 **/terraform.tfstate.backup
 
+.terraform/
+*.tfstate
+*.tfstate.*
+.terraform.tfstate.lock.info
+crash.log
+crash.*.log
