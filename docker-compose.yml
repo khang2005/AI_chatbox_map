@@ -7,7 +7,7 @@ services:
     ports:
       - "3000:3000"
     env_file:
-      - ./frontend/src/.env  # FIXED: Should be in frontend root, not src
+      - ./frontend/.env
     volumes:
       - ./frontend:/app
       - /app/node_modules
@@ -24,3 +24,6 @@ services:
       - ./backend/.env
     volumes:
       - ./backend:/app
+    network_mode: "host"
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
