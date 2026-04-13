@@ -2,20 +2,21 @@
 AI Map Chatbot Backend
 ----------------------
 
-This FastAPI backend connects your chatbot frontend to Mapbox APIs and Ollama AI.
+This FastAPI backend connects your chatbot frontend to Mapbox APIs and Gemini AI.
 It handles:
 1. Finds nearby places (like "find coffee").
 2. Provides directions ("get me to Starbucks").
-3. Uses Ollama for AI responses.
+3. Uses Gemini for AI responses with agentic RAG architecture.
 """
 
 import os
 import re
-from typing import Optional, List, Dict, Tuple
-from fastapi import FastAPI, Request
+from typing import Optional, List, Tuple
+from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
 import requests
+import google.generativeai as genai
 from dotenv import load_dotenv
 
 # ---------------------------------------------------------------------------
@@ -24,7 +25,11 @@ from dotenv import load_dotenv
 load_dotenv()
 
 MAPBOX_TOKEN = os.getenv("MAPBOX_ACCESS_TOKEN")
-OLLAMA_HOST = os.getenv("OLLAMA_HOST", "http://localhost:11434")
+GEMINI_API_KEY = os.getenv("GEMINI_API_KEY")
+
+# Configure Gemini
+if GEMINI_API_KEY:
+    genai.configure(api_key=GEMINI_API_KEY)
 
 # ---------------------------------------------------------------------------
 # App initialization
@@ -74,8 +79,9 @@ TYPE_MAP = {
 }
 
 ROUTE_TRIGGERS = (
-    "get me to", "take me to", "route to", "directions to", "navigate to",
-    "drive to", "walk to", "bike to", "nearest", "closest", "near me"
+    "get me to", "take me to", "route to", "directions to", "navigate to", "navigate me to",
+    "drive to", "walk to", "bike to", "nearest", "closest", "near me", "nearby",
+    "find", "search for", "look for", "where is", "show me", "take me"
 )
 
 ADDRESS_HINT = re.compile(
@@ -151,8 +157,86 @@ def clean_query(q: str) -> str:
     t = q.lower().strip()
     for trig in ROUTE_TRIGGERS:
         t = t.replace(trig, " ")
+    # Clean up common stopwords
+    t = re.sub(r"\b(a|an|the|to|in|of|for|with)\b", " ", t)
     t = re.sub(r"\s+", " ", t).strip()
+    print(f"DEBUG clean_query: '{q}' -> '{t}'")
     return t
+
+def search_places_nominatim(origin: Tuple[float, float], q: str) -> List[dict]:
+    """Search for nearby places using Nominatim (OpenStreetMap) - free & reliable."""
+    lat, lon = origin[0], origin[1]
+    
+    # Define a bounding box around the user (approx 10km radius)
+    lat_min, lat_max = lat - 0.1, lat + 0.1
+    lon_min, lon_max = lon - 0.1, lon + 0.1
+    
+    params = {
+        "q": q,
+        "format": "json",
+        "limit": 10,
+        "viewbox": f"{lon_min},{lat_min},{lon_max},{lat_max}",
+        "bounded": 1,
+        "addressdetails": 1,
+    }
+    headers = {"User-Agent": "AI-Map-Chatbox/1.0"}
+    
+    try:
+        resp = requests.get(
+            "https://nominatim.openstreetmap.org/search",
+            params=params,
+            headers=headers,
+            timeout=10
+        )
+        results = resp.json()
+        
+        # If bounded search fails, try without bounds
+        if not results:
+            params = {
+                "q": f"{q} near {lat},{lon}",
+                "format": "json",
+                "limit": 10,
+                "addressdetails": 1,
+            }
+            resp = requests.get(
+                "https://nominatim.openstreetmap.org/search",
+                params=params,
+                headers=headers,
+                timeout=10
+            )
+            results = resp.json()
+        
+        out = []
+        if isinstance(results, list):
+            for r in results[:5]:
+                lat_val = float(r.get("lat", 0))
+                lon_val = float(r.get("lon", 0))
+                if lat_val == 0 or lon_val == 0:
+                    continue
+                
+                # Get name from display_name (first part)
+                display_name = r.get("display_name", "Unknown")
+                name = display_name.split(",")[0] if display_name else "Unknown"
+                
+                # Get vicinity from address
+                address_parts = r.get("address", {})
+                city = address_parts.get("city") or address_parts.get("town") or address_parts.get("county") or ""
+                road = address_parts.get("road") or ""
+                vicinity = f"{road}, {city}".strip(", ") if city else road
+                
+                out.append({
+                    "name": name,
+                    "place_id": r.get("place_id"),
+                    "vicinity": vicinity or display_name.split(",")[0],
+                    "location": {"lat": lat_val, "lng": lon_val},
+                    "rating": None,
+                    "types": [r.get("type")],
+                    "source": "nominatim",
+                })
+        return out
+    except Exception as e:
+        print(f"Nominatim error: {e}")
+        return []
 
 def infer_type_and_keyword(q: str) -> Tuple[str | None, str | None]:
     ql = q.lower()
@@ -165,102 +249,126 @@ def infer_type_and_keyword(q: str) -> Tuple[str | None, str | None]:
     # Category type mapping
     for k, v in TYPE_MAP.items():
         if re.search(rf"\b{re.escape(k)}\b", ql):
-            extra = ql.replace(k, "").strip()
-            # Return the original query for better search results
             return v, q
 
     return None, q
 
 def search_places(origin: Tuple[float, float], q: str) -> List[dict]:
-    """Search for nearby places using Mapbox Search API (for POIs)."""
+    """Search for nearby places using Mapbox (primary) with Nominatim fallback."""
     t, kw = infer_type_and_keyword(q)
     
-    # Build search query
-    search_query = kw if kw else q
-    if t:
-        search_query = f"{search_query} {t}"
+    search_query = q.strip()
     
-    # Use Mapbox Search API for places/POIs (different endpoint than geocoding)
     url = "https://api.mapbox.com/search/searchbox/v1/forward"
     params = {
         "access_token": MAPBOX_TOKEN,
         "q": search_query,
-        "proximity": f"{origin[1]},{origin[0]}",  # lon,lat
+        "proximity": f"{origin[1]},{origin[0]}",
         "limit": 10,
-        "session_token": "unique-session-123",  # Helps with results
+        "language": "en",
     }
     
     try:
         resp = requests.get(url, params=params, timeout=10)
         data = resp.json()
         
-        # Check for errors
         if "message" in data:
-            print(f"Search API error: {data}")
+            print(f"Mapbox Search error: {data}")
             results = []
         else:
             results = data.get("features", [])
     except Exception as e:
-        print(f"Search API error: {e}")
+        print(f"Mapbox Search error: {e}")
         results = []
 
-    # Fallback: use geocoding if search fails
-    if not results:
-        url = f"https://api.mapbox.com/geocoding/v5/mapbox.places/{requests.utils.quote(search_query)}.json"
-        params = {
-            "access_token": MAPBOX_TOKEN,
-            "proximity": f"{origin[1]},{origin[0]}",
-            "limit": 20,
-        }
-        try:
-            resp = requests.get(url, params=params, timeout=10)
-            data = resp.json()
-            results = data.get("features", [])
-        except Exception:
-            results = []
-
-    # Fallback with larger radius if no results
-    if not results:
-        results = []
-        for r in (10000, 25000, 50000):
+    # Filter to only POIs and nearby results (within ~30km)
+    filtered = []
+    origin_lat, origin_lon = origin[0], origin[1]
+    print(f"DEBUG: origin={origin_lat},{origin_lon}")
+    for r in results[:10]:
+        geom = r.get("geometry", {})
+        coords = geom.get("coordinates", [])
+        if not coords:
+            continue
+        res_lng, res_lat = coords[0], coords[1]
+        # Calculate rough distance
+        dist = ((res_lng - origin_lon)**2 + (res_lat - origin_lat)**2) ** 0.5 * 111  # approx km
+        print(f"DEBUG: {r.get('properties',{}).get('name')} at {res_lat},{res_lng} = {dist:.1f}km, type={r.get('properties',{}).get('feature_type')}")
+        if dist > 30:
+            continue
+        # Prefer POIs over streets
+        r["_dist"] = dist
+        r["_is_poi"] = r.get("properties", {}).get("feature_type") == "poi"
+        filtered.append(r)
+    
+    # If no POIs found within 30km, do a fallback search with simpler query
+    if not filtered:
+        print("DEBUG: No nearby results, trying fallback search...")
+        simple_q = " ".join(q.split()[:2])
+        if simple_q:
+            url2 = "https://api.mapbox.com/search/searchbox/v1/forward"
+            params2 = {
+                "access_token": MAPBOX_TOKEN,
+                "q": simple_q,
+                "proximity": f"{origin[1]},{origin[0]}",
+                "limit": 10,
+                "language": "en",
+            }
             try:
-                resp = requests.get(
-                    f"https://api.mapbox.com/geocoding/v5/mapbox.places/{requests.utils.quote(q)}.json",
-                    params={"access_token": MAPBOX_TOKEN, "proximity": f"{origin[1]},{origin[0]}", "limit": 20},
-                    timeout=10
-                )
-                data = resp.json()
-                results = data.get("features", [])
-                if results:
-                    break
-            except Exception:
-                results = []
-
+                resp2 = requests.get(url2, params=params2, timeout=10)
+                data2 = resp2.json()
+                results2 = data2.get("features", [])
+                print(f"DEBUG: Fallback search returned {len(results2)} results")
+                for r in results2[:10]:
+                    geom = r.get("geometry", {})
+                    coords = geom.get("coordinates", [])
+                    if not coords:
+                        continue
+                    res_lng, res_lat = coords[0], coords[1]
+                    dist = ((res_lng - origin_lon)**2 + (res_lat - origin_lat)**2) ** 0.5 * 111
+                    if dist <= 30:
+                        r["_dist"] = dist
+                        r["_is_poi"] = r.get("properties", {}).get("feature_type") == "poi"
+                        filtered.append(r)
+            except Exception as e:
+                print(f"DEBUG: Fallback search error: {e}")
+    
+    # Sort: POIs first, then by distance (handle empty list)
+    if filtered:
+        filtered.sort(key=lambda x: (not x.get("_is_poi", False), x.get("_dist", float("inf"))))
+        results = filtered[:5]
+    else:
+        results = []
+    
     out = []
-    for r in results[:5]:
-        # Geocoding API uses 'center' for coordinates
-        lat, lng = None, None
-        if "center" in r:
-            lat, lng = r["center"][1], r["center"][0]
-        elif "geometry" in r and "coordinates" in r["geometry"]:
-            lng, lat = r["geometry"]["coordinates"]
+    for r in results:
+        props = r.get("properties", {})
         
-        if lat is None or lng is None:
+        # Get name - prefer poi name, fallback to address
+        name = props.get("name") or r.get("text") or "Unknown Place"
+        
+        # Get coordinates
+        geom = r.get("geometry", {})
+        coords = geom.get("coordinates", [])
+        if isinstance(coords, list) and len(coords) == 2:
+            lng, lat = coords[0], coords[1]
+        else:
             continue
         
-        # Get name
-        name = r.get("text") or r.get("place_name", "Unknown Place")
-        
-        # Get vicinity
-        vicinity = r.get("place_name", "")
+        # Get vicinity - prefer full address
+        address = props.get("address") or ""
+        full_address = props.get("full_address") or ""
+        place_name = r.get("place_name") or ""
+        vicinity = full_address or address or place_name
         
         out.append({
             "name": name,
-            "place_id": r.get("id"),
+            "place_id": props.get("mapbox_id") or r.get("id"),
             "vicinity": vicinity,
             "location": {"lat": lat, "lng": lng},
             "rating": None,
             "types": [r.get("type")],
+            "source": "mapbox",
         })
     return out
 
@@ -281,6 +389,7 @@ def get_directions(origin: Tuple[float, float], dest: dict, mode="driving"):
         "access_token": MAPBOX_TOKEN,
         "geometries": "polyline",
         "overview": "full",
+        "steps": "true",
     }
     
     try:
@@ -289,10 +398,26 @@ def get_directions(origin: Tuple[float, float], dest: dict, mode="driving"):
         if data.get("routes"):
             route = data["routes"][0]
             leg = route["legs"][0]
-            steps = [
-                {"instruction": s.get("maneuver", {}).get("instruction", ""), "distance_text": s.get("distance")}
-                for s in leg.get("steps", [])
-            ]
+            steps = []
+            for s in leg.get("steps", []):
+                maneuver = s.get("maneuver", {})
+                banner = s.get("bannerInstructions", [])
+                
+                # Prefer banner instruction, fall back to maneuver
+                instruction = ""
+                if banner and len(banner) > 0:
+                    instruction = banner[0].get("primary", {}).get("text", "")
+                if not instruction:
+                    maneuver_type = maneuver.get("type", "")
+                    instruction = maneuver.get("instruction", "")
+                    if not instruction and maneuver_type:
+                        instruction = f"{maneuver_type.replace('_', ' ').title()}"
+                
+                steps.append({
+                    "instruction": instruction,
+                    "distance_text": s.get("distance"),
+                    "type": maneuver.get("type", "")
+                })
             
             # Handle polyline - could be string or dict
             polyline = route.get("geometry")
@@ -325,16 +450,23 @@ def get_directions(origin: Tuple[float, float], dest: dict, mode="driving"):
     return []
 
 def is_route_intent(raw: str) -> bool:
-    raw = raw.lower()
+    raw_lower = raw.lower()
     route_words = (
         "get me to", "take me to", "route to", "directions to", "navigate to",
         "drive to", "walk to", "bike to", "nearest", "closest", "near me",
         "how to get", "how do i get", "give me directions", "show me the way",
         "navigate", "directions", "route"
     )
-    return any(p in raw for p in route_words) or raw.startswith(
-        ("take", "get", "navigate", "drive", "walk", "bike", "route")
-    )
+    # Check for full phrases first
+    for phrase in route_words:
+        if phrase in raw_lower:
+            return True
+    # Then check single words with word boundary
+    single_words = ("take", "get", "navigate", "drive", "walk", "bike", "route")
+    for word in single_words:
+        if re.search(rf"\b{word}\b", raw_lower):
+            return True
+    return False
 
 def reverse_geocode(lat: float, lng: float) -> Optional[str]:
     """Reverse geocode coordinates to address."""
@@ -350,11 +482,11 @@ def reverse_geocode(lat: float, lng: float) -> Optional[str]:
     return None
 
 # ---------------------------------------------------------------------------
-# Ollama AI functions
+# Gemini AI functions
 # ---------------------------------------------------------------------------
 
 def generate_response(user_query: str, places: List[dict], directions: dict = None) -> str:
-    """Generate AI response using Ollama."""
+    """Generate AI response using Gemini."""
     
     places_info = ""
     if places:
@@ -381,25 +513,17 @@ Found places:
 
 {route_info}
 
-Keep responses concise, friendly, and mention the places found.
+Keep responses concise, friendly, and mention the places found. If directions are available, mention them.
 Response:"""
 
     try:
-        resp = requests.post(
-            f"{OLLAMA_HOST}/api/generate",
-            json={
-                "model": "llama3",
-                "prompt": prompt,
-                "stream": False,
-            },
-            timeout=60,
-        )
-        if resp.status_code == 200:
-            return resp.json().get("response", "")
+        model = genai.GenerativeModel('gemini-2.0-flash')
+        response = model.generate_content(prompt)
+        return response.text
     except Exception as e:
-        print(f"Ollama error: {e}")
+        print(f"Gemini error: {e}")
     
-    # Fallback response
+    # Fallback response without AI
     if places:
         names = ", ".join([str(p.get("name") or "Unknown") for p in places[:3]])
         if directions:
@@ -453,12 +577,7 @@ def chat(req: ChatReq):
     wants_route = is_route_intent(raw)
     cleaned = clean_query(raw)
 
-    # Try address lookup first
-    direct = None
-    if ADDRESS_HINT.search(cleaned):
-        direct = geocode_address(cleaned)
-    
-    places = [direct] if direct else search_places(origin, cleaned)
+    places = search_places(origin, cleaned)
 
     if not places:
         return {"response": f"I couldn't find anything for '{cleaned}'.", "places": [], "directions": []}
@@ -492,7 +611,7 @@ def chat(req: ChatReq):
 
 @app.get("/")
 async def root():
-    return {"message": "AI Map Chatbot API is running with Mapbox + Ollama!"}
+    return {"message": "AI Map Chatbot API is running with Mapbox + Gemini!"}
 
 # ---------------------------------------------------------------------------
 # Local run
