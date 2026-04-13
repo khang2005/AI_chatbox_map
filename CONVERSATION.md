@@ -2,64 +2,56 @@
 
 ## Current Status (2026-04-12)
 
-The app is running but there's a port conflict issue on port 3000.
+The app is running and working. Both services running locally:
+- **Backend**: http://localhost:8000 ✅
+- **Frontend**: http://localhost:3000 ✅
 
-### Running Services
-- **Backend**: http://localhost:8000 ✅ (working)
-- **Frontend**: http://localhost:3000 (something else is using this port)
-
-### To Start Fresh
+## To Start Fresh
 
 ```bash
-# Kill anything on port 3000 first
-fuser -k 3000/tcp
+# Kill anything on ports
+fuser -k 3000/tcp 8000/tcp 2>/dev/null
 
 # Terminal 1 - Backend
-cd backend
-source .venv/bin/activate
+cd backend && source .venv/bin/activate
 uvicorn main:app --host 0.0.0.0 --port 8000
 
-# Terminal 2 - Frontend  
-cd frontend
-npm start
+# Terminal 2 - Frontend
+cd frontend && npm start
 ```
 
-### API Test - Working
-```bash
-curl -s -X POST http://localhost:8000/api/chat \
-  -H "Content-Type: application/json" \
-  -d '{"text": "nearest park", "location": {"lat": 34.0775, "lng": -117.6897}}'
-```
+## Issues Fixed
 
-Returns:
-- Alma Hofman Park in Montclair, CA
-- 630m driving distance
-- 5 turn-by-turn steps
+### 1. Map Not Rendering
+- **Problem**: Leaflet map failed with "Invalid LatLng object: (undefined, undefined)"
+- **Cause**: useEffect cleanup destroying map on every re-render, and mapCenter being undefined on first render
+- **Fix**: Initialize map with hardcoded default center (34.0775, -117.6897) immediately, added validation for undefined/null coordinates
 
-### Features Implemented
-1. IP geolocation fallback (ip-api.com)
-2. Accuracy indicator (GPS/IP)
-3. Route polyline on map
-4. Turn-by-turn directions card
-5. Mobile-responsive UI
-6. Query cleaning ("find", "near me" → removes trigger words)
+### 2. Query Cleaning
+- **Problem**: "navigate me to starbucks nearby" passed full query to Mapbox returning wrong results
+- **Cause**: "nearby" and "take me" not in ROUTE_TRIGGERS
+- **Fix**: Added "nearby", "take me" to triggers, added stopword removal (a, an, the, to, etc.)
 
-### Bug Fixes Applied
-1. Fixed Nominatim viewbox bug (lon_min used twice)
-2. Changed Mapbox search to primary (was Nominatim, returned wrong results)
-3. Fixed Mapbox Directions API `steps: "true"` (string not boolean)
+### 3. Distant Results
+- **Problem**: "starbucks on milliken ave" returned Starbucks in Canada (4000km away) instead of nearby
+- **Cause**: Mapbox returns global results for specific queries
+- **Fix**: Added distance filtering (30km radius), fallback search with simpler queries when no nearby results found
 
-### Files Modified
-- `frontend/src/App.js` - Full rewrite with directions card
-- `frontend/src/App.css` - Mobile-first styles
-- `frontend/src/hooks/useGeolocation.js` - IP fallback + accuracy
-- `backend/main.py` - Query cleaning + Mapbox priority + turn-by-turn
+### 4. Package Issues
+- **Problem**: leaflet not installed
+- **Fix**: Ran `npm install leaflet react-leaflet`
 
-### Test Queries
-- "nearest park" → Alma Hofman Park, Montclair
-- "find coffee" → Starbucks nearby
-- "get me to [place]" → turn-by-turn directions
-- "where am i" → reverse geocode
+## Files Modified
+- `frontend/src/App.js` - Map initialization fixes, coordinate validation
+- `frontend/src/App.css` - Min-height for map container
+- `backend/main.py` - Query cleaning, distance filtering, fallback search
+- `CONVERSATION.md` - This file
+
+## Test Queries
+- "where am i" → Reverse geocode address
+- "coffee nearby" → Local coffee places
+- "navigate me to starbucks" → Route to nearest Starbucks
+- "starbucks on milliken ave" → Fallback to nearest Starbucks (within 30km)
 
 ---
 
