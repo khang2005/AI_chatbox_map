@@ -1,0 +1,132 @@
+{
+  "default": {
+    "session_id": "default",
+    "last_user_query": "yes please",
+    "last_intent": {
+      "intent": "search_places",
+      "sub_intent": null,
+      "search_terms": [
+        "coffee"
+      ],
+      "filters": {},
+      "follow_up_to_previous": true,
+      "follow_up_mode": "replace_search",
+      "selected_index": null
+    },
+    "last_results": [
+      {
+        "name": "Kafn Coffee",
+        "place_id": "dXJuOm1ieHBvaTo4NmJhMDVkZC1iZjExLTRlODAtYWI1Ni01Njg0ZDcwMWEzNjc",
+        "vicinity": "1019 E Palmer Ave, Glendale, California 91205, United States",
+        "location": {
+          "lat": 34.132805,
+          "lng": -118.242218
+        },
+        "rating": null,
+        "types": [
+          "Feature"
+        ],
+        "source": "mapbox",
+        "distance_km": 0.7816692114642015,
+        "maps_deeplink": "https://www.mapbox.com/search/?api=1&query=34.132805,-118.242218",
+        "_rank_score": 0.35
+      },
+      {
+        "name": "Starbucks",
+        "place_id": "dXJuOm1ieHBvaTpmNmNlOGU1ZC02MjZkLTRlZWQtOGRiNS05OWE3ZGE1OTc5MGE",
+        "vicinity": "1360 East Colorado Street, Glendale, California 91205, United States",
+        "location": {
+          "lat": 34.1425933,
+          "lng": -118.2350962
+        },
+        "rating": null,
+        "types": [
+          "Feature"
+        ],
+        "source": "mapbox",
+        "distance_km": 0.8064790732685362,
+        "maps_deeplink": "https://www.mapbox.com/search/?api=1&query=34.1425933,-118.2350962",
+        "_rank_score": 0.35
+      },
+      {
+        "name": "Highlight Coffee",
+        "place_id": "dXJuOm1ieHBvaTo1YjVmMmIwNi1jMmUzLTRhYWItYWQ4Mi02NjYyYmIwMzVlMTU",
+        "vicinity": "701 E Broadway, Glendale, California 91205, United States",
+        "location": {
+          "lat": 34.146542,
+          "lng": -118.246785
+        },
+        "rating": null,
+        "types": [
+          "Feature"
+        ],
+        "source": "mapbox",
+        "distance_km": 0.8176273409472442,
+        "maps_deeplink": "https://www.mapbox.com/search/?api=1&query=34.146542,-118.246785",
+        "_rank_score": 0.35
+      },
+      {
+        "name": "Philz Coffee",
+        "place_id": "dXJuOm1ieHBvaTo4YjM1YjQ3Ni01ZWIzLTQwNWMtOWUwNy1lZjcyNjFmYzkzOTY",
+        "vicinity": "252 S Brand Blvd Suite A, Glendale, California 91204, United States",
+        "location": {
+          "lat": 34.143045,
+          "lng": -118.254672
+        },
+        "rating": null,
+        "types": [
+          "Feature"
+        ],
+        "source": "mapbox",
+        "distance_km": 1.1137803981566052,
+        "maps_deeplink": "https://www.mapbox.com/search/?api=1&query=34.143045,-118.254672",
+        "_rank_score": 0.27999999999999997
+      },
+      {
+        "name": "The Coffee Bean & Tea Leaf",
+        "place_id": "dXJuOm1ieHBvaTpiZWViYzA3NS1mNDkxLTRjNzktOGM5YS1hZDBkNjFlZjIxZDU",
+        "vicinity": "300 A N Glendale Ave, Glendale, California 91206, United States",
+        "location": {
+          "lat": 34.150134,
+          "lng": -118.245113
+        },
+        "rating": null,
+        "types": [
+          "Feature"
+        ],
+        "source": "mapbox",
+        "distance_km": 1.1604581309302189,
+        "maps_deeplink": "https://www.mapbox.com/search/?api=1&query=34.150134,-118.245113",
+        "_rank_score": 0.27999999999999997
+      }
+    ],
+    "selected_place": {
+      "name": "Kafn Coffee",
+      "place_id": "dXJuOm1ieHBvaTo4NmJhMDVkZC1iZjExLTRlODAtYWI1Ni01Njg0ZDcwMWEzNjc",
+      "vicinity": "1019 E Palmer Ave, Glendale, California 91205, United States",
+      "location": {
+        "lat": 34.132805,
+        "lng": -118.242218
+      },
+      "rating": null,
+      "types": [
+        "Feature"
+      ],
+      "source": "mapbox",
+      "distance_km": 0.7816692114642015,
+      "maps_deeplink": "https://www.mapbox.com/search/?api=1&query=34.132805,-118.242218",
+      "_rank_score": 0.35
+    },
+    "current_route": null,
+    "last_origin": {
+      "lat": 34.1398,
+      "lng": -118.2432
+    },
+    "search_context": {
+      "last_category": "coffee",
+      "last_area_name": null,
+      "last_action": null
+    },
+    "updated_at": 1776330016.5709803
+  }
+}

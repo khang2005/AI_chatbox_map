@@ -4,9 +4,9 @@ This file provides guidelines for agentic coding agents operating in this reposi
 
 ## Build/Lint/Test Commands
 
-*   **Test:** `pytest` (runs all tests)
-*   **Run a single test:**  `pytest <test_file_path> -k <test_name>` (e.g., `pytest test.py -k test_hello`)
-*   **Lint:** `ruff check .`
+*   **Start Services:** `./start.sh` (from project root)
+*   **Test:** `cd backend && source .venv/bin/activate && PYTHONPATH=. pytest tests/ -v`
+*   **Run a single test:** `pytest <test_file_path> -k <test_name>`
 
 ## Code Style Guidelines
 
@@ -18,6 +18,63 @@ This file provides guidelines for agentic coding agents operating in this reposi
 *   **Error Handling:** Implement appropriate try-except blocks for error handling.
 *   **File Structure:** Organize code into logical modules and packages.
 
+## Architecture
+
+```
+backend/
+├── main.py                    # FastAPI entry
+├── api/                      # Route handlers
+│   ├── routes_chat.py
+│   └── routes_health.py
+├── schemas/                  # Pydantic models
+│   ├── chat.py
+│   ├── places.py
+│   └── session.py
+├── services/                 # Business logic
+│   ├── orchestrator.py       # Main pipeline coordinator
+│   ├── intent_service.py     # Intent extraction
+│   ├── memory_service.py     # Session memory (JSON persistence)
+│   ├── place_search_service.py
+│   ├── ranking_service.py
+│   ├── route_service.py
+│   └── response_service.py
+├── providers/                # External APIs
+│   ├── gemini_provider.py
+│   └── mapbox_provider.py
+├── utils/
+│   ├── config.py
+│   └── polyline.py
+└── data/                     # Persistence
+    └── session_memory.json
+
+frontend/                     # React SPA (Port 3000)
+```
+
+## Pipeline Flow
+
+```
+User Query → Intent (Gemini) → Query Rewrite → Place Search → Ranking → Route (if needed) → Response (Gemini) → Memory Update
+```
+
+## Session Memory Behavior
+
+* Follow-up modes: `select`, `refine`, `replace_search`, `none`
+* Category switches (market, mall, cafe, etc.) trigger fresh searches
+* Explicit references ("the second one", "navigate there") reuse previous results
+* Routes cleared on replacement searches
+* JSON persistence at `backend/data/session_memory.json`
+
+## Example Queries
+
+* "where am i" → Reverse geocode address
+* "coffee nearby" → Local coffee places
+* "navigate me to starbucks" → Route
+* "the second one" → Select from previous results
+* "how about a market" → Fresh search (not follow-up)
+
 ## Rules
 
-*   No specific rules found in `.cursor/rules/`, `.cursorrules`, or `.github/copilot-instructions.md`.
+* Keep route handlers thin, business logic in services
+* Use type hints everywhere
+* Do not introduce MySQL for session memory (Redis-ready design)
+* Design MemoryService so RedisMemoryService can implement same interface
