@@ -1,0 +1,23 @@
+import os
+from typing import Optional
+
+MAPBOX_TOKEN: str = os.getenv("MAPBOX_ACCESS_TOKEN", "")
+GEMINI_API_KEY: str = os.getenv("GEMINI_API_KEY", "")
+OLLAMA_HOST: str = os.getenv("OLLAMA_HOST", "http://localhost:11434")
+
+DEFAULT_SEARCH_RADIUS_KM: float = 30.0
+DEFAULT_MAX_RESULTS: int = 5
+
+ROUTE_MODES = {"driving", "walking", "bicycling"}
+
+
+def get_mapbox_token() -> str:
+    if not MAPBOX_TOKEN:
+        raise ValueError("MAPBOX_ACCESS_TOKEN not set in environment")
+    return MAPBOX_TOKEN
+
+
+def get_gemini_key() -> str:
+    if not GEMINI_API_KEY:
+        raise ValueError("GEMINI_API_KEY not set in environment")
+    return GEMINI_API_KEY
