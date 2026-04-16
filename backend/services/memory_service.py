@@ -1,72 +1,103 @@
-"""Memory service - stores session state for follow-up queries."""
-import logging
-from typing import Dict, Optional, List, Any
+from __future__ import annotations
 
-logger = logging.getLogger(__name__)
+import json
+import time
+from pathlib import Path
+from typing import Any, Dict, Optional
+
+from schemas.session import SessionMemory
 
 
 class MemoryService:
-    """In-memory storage for session state to support follow-up queries."""
+    def __init__(self, persist_path: Optional[str] = None) -> None:
+        self._store: Dict[str, SessionMemory] = {}
+        self._persist_path = Path(persist_path) if persist_path else None
+        if self._persist_path:
+            self._load()
 
-    def __init__(self):
-        # session_id -> state dict
-        self._sessions: Dict[str, dict] = {}
+    def get_session(self, session_id: str) -> Dict[str, Any]:
+        session = self._store.get(session_id)
+        if not session:
+            session = SessionMemory(session_id=session_id, updated_at=time.time())
+            self._store[session_id] = session
+            self._save()
+        return session.model_dump()
 
-    def get_session(self, session_id: str) -> dict:
-        """Get or create session state."""
-        if session_id not in self._sessions:
-            self._sessions[session_id] = {
-                "last_query": None,
-                "last_intent": None,
-                "last_results": [],
-                "selected_place": None,
-                "current_map_center": None,
-                "current_route": None,
-            }
-        return self._sessions[session_id]
-
-    def update(
+    def upsert_session(
         self,
         session_id: str,
-        last_query: Optional[str] = None,
-        last_intent: Optional[dict] = None,
-        last_results: Optional[List[dict]] = None,
-        selected_place: Optional[dict] = None,
-        current_map_center: Optional[dict] = None,
-        current_route: Optional[dict] = None,
-    ):
-        """Update session state."""
-        session = self.get_session(session_id)
-        
-        if last_query is not None:
-            session["last_query"] = last_query
-        if last_intent is not None:
-            session["last_intent"] = last_intent
-        if last_results is not None:
-            session["last_results"] = last_results
-        if selected_place is not None:
-            session["selected_place"] = selected_place
-        if current_map_center is not None:
-            session["current_map_center"] = current_map_center
-        if current_route is not None:
-            session["current_route"] = current_route
+        *,
+        last_user_query: Optional[str] = None,
+        last_intent: Optional[Dict[str, Any]] = None,
+        last_results: Optional[list[Dict[str, Any]]] = None,
+        selected_place: Optional[Dict[str, Any]] = None,
+        current_route: Optional[Dict[str, Any]] = None,
+        last_origin: Optional[Dict[str, float]] = None,
+        search_context_updates: Optional[Dict[str, Any]] = None,
+        clear_route: bool = False,
+    ) -> Dict[str, Any]:
+        raw = self.get_session(session_id)
+        session = SessionMemory(**raw)
 
-    def get_context(self, session_id: str) -> dict:
-        """Get context from session for follow-up processing."""
+        if last_user_query is not None:
+            session.last_user_query = last_user_query
+        if last_intent is not None:
+            session.last_intent = last_intent
+        if last_results is not None:
+            session.last_results = last_results
+        if selected_place is not None:
+            session.selected_place = selected_place
+        if current_route is not None:
+            session.current_route = current_route
+        if clear_route:
+            session.current_route = None
+        if last_origin is not None:
+            session.last_origin = last_origin
+
+        if search_context_updates:
+            ctx = session.search_context.model_dump()
+            ctx.update(search_context_updates)
+            session.search_context = session.search_context.__class__(**ctx)
+
+        session.updated_at = time.time()
+        self._store[session_id] = session
+        self._save()
+        return session.model_dump()
+
+    def get_context(self, session_id: str) -> Dict[str, Any]:
         return self.get_session(session_id)
 
-    def clear_session(self, session_id: str):
-        """Clear a session."""
-        if session_id in self._sessions:
-            del self._sessions[session_id]
+    def clear_session(self, session_id: str) -> None:
+        if session_id in self._store:
+            del self._store[session_id]
+            self._save()
+
+    def _load(self) -> None:
+        if not self._persist_path or not self._persist_path.exists():
+            return
+        data = json.loads(self._persist_path.read_text(encoding="utf-8"))
+        for session_id, payload in data.items():
+            self._store[session_id] = SessionMemory(**payload)
+
+    def _save(self) -> None:
+        if not self._persist_path:
+            return
+        self._persist_path.parent.mkdir(parents=True, exist_ok=True)
+        payload = {
+            session_id: session.model_dump()
+            for session_id, session in self._store.items()
+        }
+        self._persist_path.write_text(
+            json.dumps(payload, ensure_ascii=False, indent=2),
+            encoding="utf-8",
+        )
 
 
-# Singleton
 _memory_service: Optional[MemoryService] = None
 
 
-def get_memory_service() -> MemoryService:
+def get_memory_service(persist_path: Optional[str] = None) -> MemoryService:
     global _memory_service
     if _memory_service is None:
-        _memory_service = MemoryService()
+        _memory_service = MemoryService(persist_path=persist_path)
     return _memory_service

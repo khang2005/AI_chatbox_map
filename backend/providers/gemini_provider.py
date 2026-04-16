@@ -27,12 +27,22 @@ class GeminiProvider:
         
         context_str = ""
         if session_context:
+            selected_place = session_context.get("selected_place")
+            selected_place_name = (
+                selected_place.get("name")
+                if isinstance(selected_place, dict)
+                else "None"
+            )
+            
+            last_results = session_context.get("last_results", [])
+            last_results_count = len(last_results) if last_results else 0
+            
             context_str = f"""
 Previous context:
-- Last query: {session_context.get('last_query', 'N/A')}
+- Last query: {session_context.get('last_user_query', 'N/A')}
 - Last intent: {session_context.get('last_intent', 'N/A')}
-- Last results: {session_context.get('last_results_count', 0)} places found
-- Selected place: {session_context.get('selected_place', 'None')}
+- Last results: {last_results_count} places found
+- Selected place: {selected_place_name}
 """
 
         prompt = f"""You are an intent extraction system for a map assistant. 
@@ -48,15 +58,33 @@ Return a JSON object with these fields:
 - search_terms: array of search queries to try (expand the user query)
 - filters: object with optional filters like open_now, distance_km
 - follow_up_to_previous: boolean, true if this seems to follow up on previous results
+- follow_up_mode: one of "select", "refine", "replace_search", "none"
 - selected_index: integer, if user refers to "the second one", "that one", etc.
 
-Example output:
+follow_up_mode values:
+- "select": User wants to select from previous results (e.g., "the second one", "that one")
+- "refine": User wants to refine/filter previous results (e.g., "which is open now")
+- "replace_search": User is doing a new/different search (e.g., "how about a market", "what about coffee")
+- "none": No follow-up behavior, fresh search
+
+Example outputs:
 {{
   "intent": "search_places",
   "sub_intent": "quiet",
   "search_terms": ["quiet coffee shop", "study cafe", "coffee with seating"],
   "filters": {{"open_now": false}},
   "follow_up_to_previous": false,
+  "follow_up_mode": "none",
+  "selected_index": null
+}}
+
+{{
+  "intent": "search_places",
+  "sub_intent": null,
+  "search_terms": ["market"],
+  "filters": {{}},
+  "follow_up_to_previous": true,
+  "follow_up_mode": "replace_search",
   "selected_index": null
 }}
 
@@ -66,7 +94,6 @@ Return ONLY valid JSON, no explanations:"""
             response = self.model.generate_content(prompt)
             text = response.text.strip()
             
-            # Handle markdown-wrapped JSON
             if text.startswith("```json"):
                 text = text[7:]
             if text.startswith("```"):
@@ -134,7 +161,6 @@ Response:"""
         """Fallback intent extraction when Gemini fails."""
         query_lower = user_query.lower()
         
-        # Simple keyword-based fallback
         if any(w in query_lower for w in ["where am i", "my location", "current location"]):
             return {
                 "intent": "where_am_i",
@@ -142,6 +168,7 @@ Response:"""
                 "search_terms": [],
                 "filters": {},
                 "follow_up_to_previous": False,
+                "follow_up_mode": "none",
                 "selected_index": None
             }
         
@@ -152,6 +179,7 @@ Response:"""
                 "search_terms": [user_query],
                 "filters": {},
                 "follow_up_to_previous": False,
+                "follow_up_mode": "none",
                 "selected_index": None
             }
         
@@ -161,6 +189,7 @@ Response:"""
             "search_terms": [user_query],
             "filters": {},
             "follow_up_to_previous": False,
+            "follow_up_mode": "none",
             "selected_index": None
         }
 
@@ -175,7 +204,6 @@ Response:"""
         return f"I found these nearby: {names}. Want directions?"
 
 
-# Singleton instance
 _gemini_provider: Optional[GeminiProvider] = None
 
 

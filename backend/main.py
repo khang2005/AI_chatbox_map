@@ -21,7 +21,6 @@ from fastapi.middleware.cors import CORSMiddleware
 from api import routes_chat, routes_health
 from utils.config import MAPBOX_TOKEN, GEMINI_API_KEY
 
-# Configure logging
 logging.basicConfig(
     level=logging.INFO,
     format="%(asctime)s - %(name)s - %(levelname)s - %(message)s"
@@ -34,7 +33,6 @@ async def lifespan(app: FastAPI):
     """Startup and shutdown events."""
     logger.info("Starting AI Map Chatbot API")
     
-    # Check API keys
     if not MAPBOX_TOKEN:
         logger.warning("MAPBOX_ACCESS_TOKEN not set")
     if not GEMINI_API_KEY:
@@ -44,7 +42,6 @@ async def lifespan(app: FastAPI):
     logger.info("Shutting down AI Map Chatbot API")
 
 
-# App initialization
 app = FastAPI(
     title="AI Map Chatbot API",
     description="Map assistant with Gemini intent extraction and Mapbox routing",
@@ -52,7 +49,6 @@ app = FastAPI(
     lifespan=lifespan
 )
 
-# CORS middleware
 app.add_middleware(
     CORSMiddleware,
     allow_origins=["*"],
@@ -61,7 +57,6 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-# Register routes
 app.include_router(routes_health.router)
 app.include_router(routes_chat.router)
 

@@ -1,6 +1,10 @@
 import os
 from typing import Optional
 
+from dotenv import load_dotenv
+
+load_dotenv()
+
 MAPBOX_TOKEN: str = os.getenv("MAPBOX_ACCESS_TOKEN", "")
 GEMINI_API_KEY: str = os.getenv("GEMINI_API_KEY", "")
 OLLAMA_HOST: str = os.getenv("OLLAMA_HOST", "http://localhost:11434")

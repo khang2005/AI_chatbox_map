@@ -5,9 +5,12 @@ from typing import Optional
 from fastapi import APIRouter, HTTPException
 
 from schemas.chat import ChatRequest, ChatResponse
+from services.memory_service import get_memory_service
 from services.orchestrator import get_orchestrator
 
 logger = logging.getLogger(__name__)
+
+_memory_service = get_memory_service(persist_path="data/session_memory.json")
 
 router = APIRouter(prefix="/api", tags=["chat"])
 

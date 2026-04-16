@@ -42,32 +42,35 @@ class Orchestrator:
         Returns:
             Response dict with response, places, directions
         """
-        # Get session context for follow-up handling
         session_context = self.memory.get_context(session_id)
         
-        # Step 1: Extract structured intent
         intent = self.gemini.extract_intent(query, session_context)
         logger.info(f"Extracted intent: {intent}")
         
-        # Handle special intents first
         if intent.get("intent") == "where_am_i":
-            return self._handle_where_am_i(location, session_id)
+            return self._handle_where_am_i(location, session_id, query)
         
         if not location:
             return self._error_response("no_location")
         
         origin = (location["lat"], location["lng"])
         
-        # Handle follow-up queries
-        if intent.get("follow_up_to_previous") or self._is_follow_up(query, session_context):
+        is_replacement = self._looks_like_replacement_search(query, intent)
+        
+        if self._should_reuse_previous_results(query, intent, session_context):
             return self._handle_follow_up(
-                query, origin, intent, session_context, session_id
+                query, origin, intent, session_context, session_id, mode
             )
         
-        # Step 2: Check if route intent
+        if is_replacement:
+            self.memory.upsert_session(
+                session_id,
+                current_route=None,
+                search_context_updates={"last_category": self._extract_category(query)}
+            )
+        
         wants_route = self.route.is_route_intent(query)
         
-        # Step 3: Search for places
         raw_results = self.place_search.search(
             query=query,
             origin=origin,
@@ -79,12 +82,12 @@ class Orchestrator:
         places = self.place_search.normalize_results(raw_results)
         
         if not places:
-            # Update memory and return error
-            self.memory.update(
+            self.memory.upsert_session(
                 session_id,
-                last_query=query,
+                last_user_query=query,
                 last_intent=intent,
-                last_results=[]
+                last_results=[],
+                search_context_updates={"last_category": self._extract_category(query)}
             )
             return {
                 "response": self.response.generate_error("no_results"),
@@ -92,7 +95,6 @@ class Orchestrator:
                 "directions": []
             }
         
-        # Step 4: Rank results
         ranked_places = self.ranking.rank(
             places=places,
             query=query,
@@ -100,7 +102,6 @@ class Orchestrator:
             session_context=session_context
         )
         
-        # Handle selection by index ("the second one")
         selected_index = intent.get("selected_index")
         if selected_index is not None:
             selected = self.ranking.select_by_index(ranked_places, selected_index)
@@ -108,8 +109,8 @@ class Orchestrator:
                 ranked_places = [selected]
         
         directions = []
+        new_route = None
         
-        # Step 5: Get route if needed
         if wants_route and ranked_places:
             dest = ranked_places[0]["location"]
             route_result = self.route.get_route(
@@ -119,8 +120,8 @@ class Orchestrator:
             )
             if route_result:
                 directions = [route_result]
+                new_route = route_result
         
-        # Step 6: Generate response
         response_text = self.response.generate(
             user_query=query,
             places=ranked_places,
@@ -128,15 +129,15 @@ class Orchestrator:
             intent=intent
         )
         
-        # Update memory
-        self.memory.update(
+        self.memory.upsert_session(
             session_id,
-            last_query=query,
+            last_user_query=query,
             last_intent=intent,
             last_results=ranked_places,
             selected_place=ranked_places[0] if ranked_places else None,
-            current_map_center=location,
-            current_route=directions[0] if directions else None
+            last_origin=location,
+            current_route=new_route,
+            search_context_updates={"last_category": self._extract_category(query)}
         )
         
         return {
@@ -145,8 +146,86 @@ class Orchestrator:
             "directions": directions
         }
 
-    def _handle_where_am_i(self, location: Optional[dict], session_id: str) -> dict:
-        """Handle 'where am I' query."""
+    def _should_reuse_previous_results(self, query: str, intent: dict, session_context: dict) -> bool:
+        if not session_context.get("last_results"):
+            return False
+
+        if intent.get("follow_up_mode") == "select":
+            return True
+
+        if intent.get("selected_index") is not None:
+            return True
+
+        query_lower = query.lower().strip()
+
+        explicit_reference_phrases = (
+            "that one",
+            "this one",
+            "there",
+            "the first",
+            "the second",
+            "the third",
+            "navigate there",
+            "take me there",
+            "route there",
+            "is it open",
+            "is that open",
+        )
+        if any(phrase in query_lower for phrase in explicit_reference_phrases):
+            return True
+
+        if intent.get("follow_up_mode") == "refine":
+            return True
+
+        return False
+
+    def _looks_like_replacement_search(self, query: str, intent: dict) -> bool:
+        if intent.get("follow_up_mode") == "replace_search":
+            return True
+
+        query_lower = query.lower().strip()
+
+        replacement_terms = (
+            "market",
+            "mall",
+            "grocery",
+            "supermarket",
+            "gas station",
+            "pharmacy",
+            "restaurant",
+            "cafe",
+            "hotel",
+            "bank",
+            "hospital",
+            "park",
+        )
+
+        replacement_phrases = (
+            "how about",
+            "what about",
+            "instead",
+            "i want",
+            "show me a",
+            "show me an",
+            "find a",
+            "find an",
+        )
+
+        has_replacement_phrase = any(p in query_lower for p in replacement_phrases)
+        has_replacement_term = any(t in query_lower for t in replacement_terms)
+
+        return has_replacement_phrase and has_replacement_term
+
+    def _extract_category(self, query: str) -> Optional[str]:
+        query_lower = query.lower()
+        categories = ["coffee", "cafe", "market", "mall", "restaurant", "gas station", 
+                      "pharmacy", "hotel", "bank", "hospital", "park", "starbucks"]
+        for cat in categories:
+            if cat in query_lower:
+                return cat
+        return None
+
+    def _handle_where_am_i(self, location: Optional[dict], session_id: str, query: str) -> dict:
         if not location:
             return self._error_response("no_location")
         
@@ -157,11 +236,11 @@ class Orchestrator:
         else:
             response = f"Your coordinates are: {location['lat']}, {location['lng']}"
         
-        self.memory.update(
+        self.memory.upsert_session(
             session_id,
-            last_query="where am i",
+            last_user_query=query,
             last_intent={"intent": "where_am_i"},
-            current_map_center=location
+            last_origin=location
         )
         
         return {
@@ -176,13 +255,12 @@ class Orchestrator:
         origin: Tuple[float, float],
         intent: dict,
         session_context: dict,
-        session_id: str
+        session_id: str,
+        mode: str
     ) -> dict:
-        """Handle follow-up queries like 'show me the second one' or 'which is open now'."""
+        last_results = session_context.get("last_results", [])
         
-        # If selecting from previous results
         if intent.get("selected_index") is not None:
-            last_results = session_context.get("last_results", [])
             selected = self.ranking.select_by_index(last_results, intent["selected_index"])
             
             if not selected:
@@ -190,16 +268,18 @@ class Orchestrator:
             
             wants_route = self.route.is_route_intent(query)
             directions = []
+            new_route = None
             
             if wants_route:
                 dest = selected["location"]
                 route_result = self.route.get_route(
                     origin=origin,
                     destination=(dest["lat"], dest["lng"]),
-                    mode="driving"
+                    mode=mode
                 )
                 if route_result:
                     directions = [route_result]
+                    new_route = route_result
             
             response_text = self.response.generate(
                 user_query=query,
@@ -208,12 +288,11 @@ class Orchestrator:
                 intent={"intent": "follow_up", "sub_intent": intent.get("sub_intent")}
             )
             
-            self.memory.update(
+            self.memory.upsert_session(
                 session_id,
-                last_query=query,
-                last_intent=intent,
+                last_user_query=query,
                 selected_place=selected,
-                current_route=directions[0] if directions else None
+                current_route=new_route
             )
             
             return {
@@ -222,24 +301,19 @@ class Orchestrator:
                 "directions": directions
             }
         
-        # Otherwise generate follow-up response
-        response_text = self.response.generate_follow_up(query, session_context)
+        response_text = self.response.generate_follow_up(
+            query=query,
+            context=session_context,
+            is_result_reference=True
+        )
         
         return {
             "response": response_text,
-            "places": session_context.get("last_results", []),
+            "places": last_results[:3],
             "directions": [session_context.get("current_route")] if session_context.get("current_route") else []
         }
 
-    def _is_follow_up(self, query: str, session_context: dict) -> bool:
-        """Check if query is a follow-up to previous results."""
-        query_lower = query.lower()
-        follow_indicators = ["that one", "the first", "the second", "the third", 
-                            "show me", "which one", "what about", "another"]
-        return any(ind in query_lower for ind in follow_indicators) and session_context.get("last_results")
-
     def _error_response(self, error_type: str) -> dict:
-        """Generate error response."""
         return {
             "response": self.response.generate_error(error_type),
             "places": [],
@@ -247,7 +321,6 @@ class Orchestrator:
         }
 
 
-# Singleton
 _orchestrator: Optional[Orchestrator] = None
 
 

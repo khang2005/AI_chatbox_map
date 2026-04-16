@@ -20,18 +20,6 @@ class ResponseService:
         directions: Optional[dict] = None,
         intent: Optional[Dict[str, Any]] = None
     ) -> str:
-        """
-        Generate natural language response.
-        
-        Args:
-            user_query: Original user query
-            places: List of found places
-            directions: Optional route info
-            intent: Structured intent data
-            
-        Returns:
-            Response string
-        """
         return self.gemini.generate_response(
             user_query=user_query,
             places=places,
@@ -40,11 +28,9 @@ class ResponseService:
         )
 
     def generate_where_am_i(self, address: str) -> str:
-        """Generate response for where am I query."""
         return f"You are at: {address}"
 
     def generate_error(self, error_type: str) -> str:
-        """Generate error response."""
         errors = {
             "no_location": "Please enable location access so I can help you navigate.",
             "no_results": "Sorry, I couldn't find any places matching your request.",
@@ -56,26 +42,39 @@ class ResponseService:
     def generate_follow_up(
         self,
         query: str,
-        context: dict
+        context: dict,
+        is_result_reference: bool = False
     ) -> str:
-        """Generate response for follow-up queries."""
-        session_context = {
-            "last_query": context.get("last_query"),
-            "last_intent": context.get("last_intent"),
-            "last_results_count": len(context.get("last_results", [])),
-            "selected_place": context.get("selected_place", {}).get("name") if context.get("selected_place") else None,
-        }
+        if is_result_reference:
+            selected_place = context.get("selected_place")
+            selected_place_name = (
+                selected_place.get("name")
+                if isinstance(selected_place, dict)
+                else None
+            )
+            
+            return self.gemini.generate_response(
+                user_query=query,
+                places=context.get("last_results", [])[:3],
+                directions=context.get("current_route"),
+                intent={
+                    "intent": "follow_up",
+                    "context": {
+                        "last_query": context.get("last_user_query"),
+                        "selected_place": selected_place_name,
+                        "last_results_count": len(context.get("last_results", []))
+                    }
+                }
+            )
         
-        # Use Gemini for follow-up with context
         return self.gemini.generate_response(
             user_query=query,
-            places=context.get("last_results", [])[:3],
-            directions=context.get("current_route"),
-            intent={"intent": "follow_up", "context": session_context}
+            places=[],
+            directions=None,
+            intent={"intent": "general_chat"}
         )
 
 
-# Singleton
 _response_service: Optional[ResponseService] = None
 
 
