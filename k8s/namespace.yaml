@@ -1,0 +1,7 @@
+# Namespace for AI Chatbox Map
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: ai-chatbox-map
+  labels:
+    app: ai-chatbox-map

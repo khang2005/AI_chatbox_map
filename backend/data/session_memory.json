@@ -1,132 +1,82 @@
 {
   "default": {
     "session_id": "default",
-    "last_user_query": "yes please",
+    "last_user_query": "direct me to BPP paint store",
     "last_intent": {
-      "intent": "search_places",
+      "intent": "route",
       "sub_intent": null,
       "search_terms": [
-        "coffee"
+        "BPP paint store"
       ],
       "filters": {},
-      "follow_up_to_previous": true,
-      "follow_up_mode": "replace_search",
+      "follow_up_to_previous": false,
+      "follow_up_mode": "none",
       "selected_index": null
     },
-    "last_results": [
-      {
-        "name": "Kafn Coffee",
-        "place_id": "dXJuOm1ieHBvaTo4NmJhMDVkZC1iZjExLTRlODAtYWI1Ni01Njg0ZDcwMWEzNjc",
-        "vicinity": "1019 E Palmer Ave, Glendale, California 91205, United States",
-        "location": {
-          "lat": 34.132805,
-          "lng": -118.242218
-        },
-        "rating": null,
-        "types": [
-          "Feature"
-        ],
-        "source": "mapbox",
-        "distance_km": 0.7816692114642015,
-        "maps_deeplink": "https://www.mapbox.com/search/?api=1&query=34.132805,-118.242218",
-        "_rank_score": 0.35
-      },
-      {
-        "name": "Starbucks",
-        "place_id": "dXJuOm1ieHBvaTpmNmNlOGU1ZC02MjZkLTRlZWQtOGRiNS05OWE3ZGE1OTc5MGE",
-        "vicinity": "1360 East Colorado Street, Glendale, California 91205, United States",
-        "location": {
-          "lat": 34.1425933,
-          "lng": -118.2350962
-        },
-        "rating": null,
-        "types": [
-          "Feature"
-        ],
-        "source": "mapbox",
-        "distance_km": 0.8064790732685362,
-        "maps_deeplink": "https://www.mapbox.com/search/?api=1&query=34.1425933,-118.2350962",
-        "_rank_score": 0.35
-      },
-      {
-        "name": "Highlight Coffee",
-        "place_id": "dXJuOm1ieHBvaTo1YjVmMmIwNi1jMmUzLTRhYWItYWQ4Mi02NjYyYmIwMzVlMTU",
-        "vicinity": "701 E Broadway, Glendale, California 91205, United States",
-        "location": {
-          "lat": 34.146542,
-          "lng": -118.246785
-        },
-        "rating": null,
-        "types": [
-          "Feature"
-        ],
-        "source": "mapbox",
-        "distance_km": 0.8176273409472442,
-        "maps_deeplink": "https://www.mapbox.com/search/?api=1&query=34.146542,-118.246785",
-        "_rank_score": 0.35
-      },
-      {
-        "name": "Philz Coffee",
-        "place_id": "dXJuOm1ieHBvaTo4YjM1YjQ3Ni01ZWIzLTQwNWMtOWUwNy1lZjcyNjFmYzkzOTY",
-        "vicinity": "252 S Brand Blvd Suite A, Glendale, California 91204, United States",
-        "location": {
-          "lat": 34.143045,
-          "lng": -118.254672
-        },
-        "rating": null,
-        "types": [
-          "Feature"
-        ],
-        "source": "mapbox",
-        "distance_km": 1.1137803981566052,
-        "maps_deeplink": "https://www.mapbox.com/search/?api=1&query=34.143045,-118.254672",
-        "_rank_score": 0.27999999999999997
-      },
-      {
-        "name": "The Coffee Bean & Tea Leaf",
-        "place_id": "dXJuOm1ieHBvaTpiZWViYzA3NS1mNDkxLTRjNzktOGM5YS1hZDBkNjFlZjIxZDU",
-        "vicinity": "300 A N Glendale Ave, Glendale, California 91206, United States",
-        "location": {
-          "lat": 34.150134,
-          "lng": -118.245113
-        },
-        "rating": null,
-        "types": [
-          "Feature"
-        ],
-        "source": "mapbox",
-        "distance_km": 1.1604581309302189,
-        "maps_deeplink": "https://www.mapbox.com/search/?api=1&query=34.150134,-118.245113",
-        "_rank_score": 0.27999999999999997
-      }
-    ],
+    "last_results": [],
     "selected_place": {
-      "name": "Kafn Coffee",
-      "place_id": "dXJuOm1ieHBvaTo4NmJhMDVkZC1iZjExLTRlODAtYWI1Ni01Njg0ZDcwMWEzNjc",
-      "vicinity": "1019 E Palmer Ave, Glendale, California 91205, United States",
+      "name": "Main Street Outlets",
+      "place_id": "dXJuOm1ieHBvaTo0MTU3MzI3MS02OWQzLTRlODAtOGJkZS0xMGUwZDE2ZGNiZTA",
+      "vicinity": "214 W Holt Ave, Pomona, California 91768, United States",
       "location": {
-        "lat": 34.132805,
-        "lng": -118.242218
+        "lat": 34.0622355,
+        "lng": -117.75266628
       },
       "rating": null,
       "types": [
         "Feature"
       ],
       "source": "mapbox",
-      "distance_km": 0.7816692114642015,
-      "maps_deeplink": "https://www.mapbox.com/search/?api=1&query=34.132805,-118.242218",
-      "_rank_score": 0.35
+      "distance_km": 1.5299572904207486,
+      "maps_deeplink": "https://www.mapbox.com/search/?api=1&query=34.0622355,-117.75266628",
+      "_rank_score": 0.27999999999999997
     },
-    "current_route": null,
+    "current_route": {
+      "origin": {
+        "lat": 34.061866164425986,
+        "lng": -117.73603430732963
+      },
+      "destination": {
+        "lat": 34.06298375,
+        "lng": -117.73046969
+      },
+      "mode": "driving",
+      "distance_text": 618.921,
+      "duration_text": 91.495,
+      "polyline": "gu{nEdirmUEqF?MwA@eA@Y@A{@G{E?KA}AA{@As@?E?kBCiBAy@?k@?EAa@?A",
+      "steps": [
+        {
+          "instruction": "Drive east on East Hawthorne Place.",
+          "distance_text": 118.621,
+          "type": "depart"
+        },
+        {
+          "instruction": "Turn left onto North Mountain View Avenue.",
+          "distance_text": 102.46,
+          "type": "turn"
+        },
+        {
+          "instruction": "Turn right onto East Holt Avenue.",
+          "distance_text": 397.84,
+          "type": "end of road"
+        },
+        {
+          "instruction": "Your destination is on the left.",
+          "distance_text": 0,
+          "type": "arrive"
+        }
+      ],
+      "maps_deeplink": "https://www.mapbox.com/directions/?api=1&origin=34.061866164425986,-117.73603430732963&destination=34.06298375,-117.73046969&mode=driving"
+    },
     "last_origin": {
-      "lat": 34.1398,
-      "lng": -118.2432
+      "lat": 34.061866164425986,
+      "lng": -117.73603430732963
     },
     "search_context": {
-      "last_category": "coffee",
+      "last_category": null,
       "last_area_name": null,
       "last_action": null
     },
-    "updated_at": 1776330016.5709803
+    "updated_at": 1776807414.9437346
   }
 }

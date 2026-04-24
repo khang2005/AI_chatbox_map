@@ -34,3 +34,17 @@ override.tf.json
 *_override.tf.json
 .terraformrc
 terraform.rc
+
+# Kubernetes
+k8s/secrets.yaml
+k8s/cloudflare-secret.yaml
+
+# Binaries
+kubectl
+cloudflared
+*.deb
+
+# Temp files
+*.swp
+*~
+session-*.md

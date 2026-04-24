@@ -19,7 +19,7 @@ variable "project_name" {
 variable "vm_size" {
   description = "Size of the virtual machines (cost-efficient)"
   type        = string
-  default     = "Standard_B2s"  # 2 vCPUs, 4GB RAM - cost efficient
+  default     = "Standard_B2s" # 2 vCPUs, 4GB RAM - cost efficient
 }
 
 variable "worker_node_count" {
@@ -37,7 +37,7 @@ variable "admin_username" {
 variable "ssh_public_key" {
   description = "SSH public key for VM access"
   type        = string
-  
+
 }
 
 variable "gemini_api_key" {
@@ -52,6 +52,45 @@ variable "google_maps_api_key" {
   type        = string
   sensitive   = true
   # You'll need to set this when running terraform
+}
+
+variable "kubeconfig_ca_certificate" {
+  description = "Kubernetes cluster CA certificate"
+  type        = string
+  sensitive   = true
+  default     = ""
+}
+
+variable "kubeconfig_token" {
+  description = "Kubernetes bearer token"
+  type        = string
+  sensitive   = true
+  default     = ""
+}
+
+variable "docker_registry_username" {
+  description = "Docker registry username"
+  type        = string
+  default     = ""
+}
+
+variable "docker_registry_password" {
+  description = "Docker registry password"
+  type        = string
+  sensitive   = true
+  default     = ""
+}
+
+variable "docker_registry_server" {
+  description = "Docker registry server"
+  type        = string
+  default     = "docker.io"
+}
+
+variable "ssh_private_key" {
+  description = "SSH private key for VM access"
+  type        = string
+  sensitive   = true
 }
 
 variable "tags" {

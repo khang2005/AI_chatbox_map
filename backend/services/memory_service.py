@@ -12,6 +12,7 @@ class MemoryService:
     def __init__(self, persist_path: Optional[str] = None) -> None:
         self._store: Dict[str, SessionMemory] = {}
         self._persist_path = Path(persist_path) if persist_path else None
+        self._max_history_messages = 5
         if self._persist_path:
             self._load()
 
@@ -40,17 +41,26 @@ class MemoryService:
         session = SessionMemory(**raw)
 
         if last_user_query is not None:
-            session.last_user_query = last_user_query
+            # Trim and validate user query
+            last_user_query = last_user_query.strip()[:500]  # Max 500 chars
+            if last_user_query:
+                session.last_user_query = last_user_query
+
         if last_intent is not None:
             session.last_intent = last_intent
+
         if last_results is not None:
-            session.last_results = last_results
+            # Limit results to prevent excessive memory usage
+            session.last_results = last_results[:10]  # Max 10 results
+
         if selected_place is not None:
             session.selected_place = selected_place
+
         if current_route is not None:
             session.current_route = current_route
         if clear_route:
             session.current_route = None
+
         if last_origin is not None:
             session.last_origin = last_origin
 
@@ -65,7 +75,20 @@ class MemoryService:
         return session.model_dump()
 
     def get_context(self, session_id: str) -> Dict[str, Any]:
-        return self.get_session(session_id)
+        """Get trimmed context for LLM calls with token control."""
+        session_data = self.get_session(session_id)
+        session = SessionMemory(**session_data)
+        
+        # Use the built-in method to get trimmed context
+        return session.trim_context_for_llm()
+
+    def get_conversation_history(self, session_id: str, max_messages: Optional[int] = None) -> List[Dict[str, Any]]:
+        """Get conversation history with token control."""
+        session_data = self.get_session(session_id)
+        session = SessionMemory(**session_data)
+        
+        max_limit = max_messages or self._max_history_messages
+        return session.get_conversation_history(max_limit)
 
     def clear_session(self, session_id: str) -> None:
         if session_id in self._store:

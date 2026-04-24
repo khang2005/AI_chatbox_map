@@ -1,4 +1,4 @@
-from pydantic import BaseModel, Field
+from pydantic import BaseModel, Field, field_validator
 from typing import Optional, List, Dict, Any
 
 from schemas.places import PlaceResult, RouteResult
@@ -10,10 +10,25 @@ class Location(BaseModel):
 
 
 class ChatRequest(BaseModel):
-    text: str
+    text: str = Field(..., max_length=500)
     location: Optional[Location] = None
     mode: Optional[str] = "driving"
     session_id: Optional[str] = None
+    history: Optional[List[str]] = Field(default_factory=list, max_length=5)
+
+    @field_validator('text')
+    @classmethod
+    def validate_text(cls, v):
+        if not v or not v.strip():
+            raise ValueError("Message cannot be empty")
+        return v.strip()
+
+    @field_validator('mode')
+    @classmethod
+    def validate_mode(cls, v):
+        if v not in {"driving", "walking", "bicycling"}:
+            raise ValueError("Invalid mode")
+        return v
 
 
 class IntentData(BaseModel):

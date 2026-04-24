@@ -184,14 +184,15 @@ class TestIntentService:
 
     def test_extract_intent_adds_defaults(self):
         """Test that IntentService adds default values."""
+        import asyncio
         from services.intent_service import IntentService
         from unittest.mock import MagicMock
-        
+    
         mock_gemini = MagicMock()
         mock_gemini.extract_intent.return_value = {"intent": "search_places"}
         
         service = IntentService(mock_gemini)
-        result = service.extract_intent("test query", {})
+        result = asyncio.run(service.extract_intent("test query", {}))
         
         assert result["follow_up_to_previous"] is False
         assert result["follow_up_mode"] == "none"

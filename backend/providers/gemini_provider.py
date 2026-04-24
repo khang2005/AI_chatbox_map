@@ -1,7 +1,9 @@
 """Gemini API provider for structured intent extraction."""
 import json
 import logging
+import time
 from typing import Optional
+import asyncio
 
 import google.generativeai as genai
 
@@ -17,13 +19,16 @@ class GeminiProvider:
         api_key = get_gemini_key()
         genai.configure(api_key=api_key)
         self.model = genai.GenerativeModel("gemini-2.0-flash")
+        self.max_retries = 3
+        self.timeout = 5
+        self.max_tokens = 1000
 
-    def extract_intent(
+    async def extract_intent(
         self,
         user_query: str,
         session_context: Optional[dict] = None
     ) -> dict:
-        """Extract structured intent from user query using Gemini."""
+        """Extract structured intent from user query using Gemini with retry logic."""
         
         context_str = ""
         if session_context:
@@ -90,34 +95,52 @@ Example outputs:
 
 Return ONLY valid JSON, no explanations:"""
 
-        try:
-            response = self.model.generate_content(prompt)
-            text = response.text.strip()
-            
-            if text.startswith("```json"):
-                text = text[7:]
-            if text.startswith("```"):
-                text = text[3:]
-            if text.endswith("```"):
-                text = text[:-3]
-            
-            return json.loads(text.strip())
-            
-        except json.JSONDecodeError as e:
-            logger.error(f"Failed to parse Gemini response as JSON: {e}")
-            return self._fallback_intent(user_query)
-        except Exception as e:
-            logger.error(f"Gemini API error: {e}")
-            return self._fallback_intent(user_query)
+        for attempt in range(self.max_retries):
+            try:
+                response = await asyncio.wait_for(
+                    asyncio.to_thread(self.model.generate_content, prompt),
+                    timeout=self.timeout
+                )
+                text = response.text.strip()
+                
+                if text.startswith("```json"):
+                    text = text[7:]
+                if text.startswith("```"):
+                    text = text[3:]
+                if text.endswith("```"):
+                    text = text[:-3]
+                
+                result = json.loads(text.strip())
+                return result
+                
+            except asyncio.TimeoutError:
+                logger.warning(f"Gemini timeout on attempt {attempt + 1}")
+                if attempt == self.max_retries - 1:
+                    return self._fallback_intent(user_query)
+                await asyncio.sleep(2 ** attempt)
+                
+            except json.JSONDecodeError as e:
+                logger.error(f"Failed to parse Gemini response as JSON: {e}")
+                if attempt == self.max_retries - 1:
+                    return self._fallback_intent(user_query)
+                await asyncio.sleep(2 ** attempt)
+                
+            except Exception as e:
+                logger.error(f"Gemini API error on attempt {attempt + 1}: {e}")
+                if attempt == self.max_retries - 1:
+                    return self._fallback_intent(user_query)
+                await asyncio.sleep(2 ** attempt)
+        
+        return self._fallback_intent(user_query)
 
-    def generate_response(
+    async def generate_response(
         self,
         user_query: str,
         places: list,
         directions: Optional[dict] = None,
         intent: Optional[dict] = None
     ) -> str:
-        """Generate natural language response after search/ranking."""
+        """Generate natural language response after search/ranking with safety wrapper."""
         
         places_info = ""
         if places:
@@ -150,12 +173,27 @@ Found places:
 Keep responses concise, friendly, and mention the places found. If directions are available, mention them.
 Response:"""
 
-        try:
-            response = self.model.generate_content(prompt)
-            return response.text
-        except Exception as e:
-            logger.error(f"Gemini response generation error: {e}")
-            return self._fallback_response(places, directions)
+        for attempt in range(self.max_retries):
+            try:
+                response = await asyncio.wait_for(
+                    asyncio.to_thread(self.model.generate_content, prompt),
+                    timeout=self.timeout
+                )
+                return response.text
+                
+            except asyncio.TimeoutError:
+                logger.warning(f"Gemini response timeout on attempt {attempt + 1}")
+                if attempt == self.max_retries - 1:
+                    return self._fallback_response(places, directions)
+                await asyncio.sleep(2 ** attempt)
+                
+            except Exception as e:
+                logger.error(f"Gemini response generation error on attempt {attempt + 1}: {e}")
+                if attempt == self.max_retries - 1:
+                    return self._fallback_response(places, directions)
+                await asyncio.sleep(2 ** attempt)
+        
+        return self._fallback_response(places, directions)
 
     def _fallback_intent(self, user_query: str) -> dict:
         """Fallback intent extraction when Gemini fails."""
