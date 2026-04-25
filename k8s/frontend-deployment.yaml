@@ -16,13 +16,10 @@ spec:
     spec:
       containers:
         - name: frontend
-          image: nginx:alpine
+          image: ktran597/ai_chatbox_map_frontend:latest
+          imagePullPolicy: Always
           ports:
           - containerPort: 80
-          volumeMounts:
-          - name: test-page-volume
-            mountPath: /usr/share/nginx/html/index.html
-            subPath: test-page.html
           env:
           - name: REACT_APP_GOOGLE_MAPS_API_KEY
             valueFrom:
@@ -30,7 +27,7 @@ spec:
                 name: api-keys
                 key: google-maps-api-key
           - name: REACT_APP_BACKEND_URL
-            value: "http://backend-service:8000"
+            value: "/api"
           resources:
             requests:
               memory: "256Mi"
@@ -38,10 +35,6 @@ spec:
             limits:
               memory: "512Mi"
               cpu: "500m"
-      volumes:
-      - name: test-page-volume
-        configMap:
-          name: test-page
 ---
 # Frontend Service
 apiVersion: v1

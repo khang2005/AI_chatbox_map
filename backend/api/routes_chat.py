@@ -70,7 +70,7 @@ async def chat(request: Request, req: ChatRequest) -> dict:
     orchestrator = get_orchestrator()
     
     try:
-        result = orchestrator.handle(
+        result = await orchestrator.handle(
             query=req.text,
             location=req.location.model_dump() if req.location else None,
             mode=req.mode or "driving",

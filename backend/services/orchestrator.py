@@ -29,7 +29,7 @@ class Orchestrator:
         self.memory = get_memory_service()
         self.response = get_response_service()
 
-    def handle(self, query: str, location: Optional[dict], mode: str, session_id: str) -> dict:
+    async def handle(self, query: str, location: Optional[dict], mode: str, session_id: str) -> dict:
         """
         Handle a complete chat request.
         
@@ -44,7 +44,7 @@ class Orchestrator:
         """
         session_context = self.memory.get_context(session_id)
         
-        intent = self.gemini.extract_intent(query, session_context)
+        intent = await self.gemini.extract_intent(query, session_context)
         logger.info(f"Extracted intent: {intent}")
         
         if intent.get("intent") == "where_am_i":
