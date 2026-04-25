@@ -2,15 +2,15 @@ FROM python:3.12-slim
 
 WORKDIR /app
 
-# Install dependencies first to leverage caching
 COPY requirements.txt .
 RUN pip install --no-cache-dir -r requirements.txt
 
-# Create a non-root user
-RUN useradd -m appuser
-USER appuser
+COPY . .
 
-COPY main.py .
+ENV PYTHONPATH=/app
+
+RUN useradd -m appuser && chown -R appuser:appuser /app
+USER appuser
 
 EXPOSE 8000
 

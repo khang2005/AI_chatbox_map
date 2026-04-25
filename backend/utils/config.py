@@ -1,9 +1,12 @@
+import logging
 import os
 from typing import Optional
 
 from dotenv import load_dotenv
 
 load_dotenv()
+
+logger = logging.getLogger(__name__)
 
 MAPBOX_TOKEN: str = os.getenv("MAPBOX_ACCESS_TOKEN", "")
 GEMINI_API_KEY: str = os.getenv("GEMINI_API_KEY", "")
@@ -17,7 +20,8 @@ ROUTE_MODES = {"driving", "walking", "bicycling"}
 
 def get_mapbox_token() -> str:
     if not MAPBOX_TOKEN:
-        raise ValueError("MAPBOX_ACCESS_TOKEN not set in environment")
+        logger.warning("MAPBOX_ACCESS_TOKEN not set - place search and routing disabled")
+        return ""
     return MAPBOX_TOKEN
 
 

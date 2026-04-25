@@ -16,17 +16,15 @@ spec:
     spec:
       containers:
       - name: backend
-        image: python:3.12-slim
+        image: ktran597/ai_chatbox_map_backend:latest
+        imagePullPolicy: Always
         command: ["/bin/sh", "-c"]
         args:
           - |
-            pip install fastapi uvicorn python-dotenv requests google-generativeai
             mkdir -p /app/data
             echo '{"sessions": {}}' > /app/data/session_memory.json
             exec uvicorn main:app --host 0.0.0.0 --port 8000
         volumeMounts:
-        - name: backend-code
-          mountPath: /app
         - name: data-volume
           mountPath: /app/data
         ports:
@@ -42,6 +40,11 @@ spec:
             secretKeyRef:
               name: api-keys
               key: google-maps-api-key
+        - name: MAPBOX_ACCESS_TOKEN
+          valueFrom:
+            secretKeyRef:
+              name: api-keys
+              key: mapbox-access-token
         resources:
           requests:
             memory: "256Mi"
@@ -50,9 +53,6 @@ spec:
             memory: "512Mi"
             cpu: "500m"
       volumes:
-      - name: backend-code
-        configMap:
-          name: backend-code
       - name: data-volume
         emptyDir: {}
 ---

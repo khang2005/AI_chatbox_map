@@ -3,7 +3,7 @@ from __future__ import annotations
 import json
 import time
 from pathlib import Path
-from typing import Any, Dict, Optional
+from typing import Any, Dict, List, Optional
 
 from schemas.session import SessionMemory
 
@@ -98,9 +98,19 @@ class MemoryService:
     def _load(self) -> None:
         if not self._persist_path or not self._persist_path.exists():
             return
-        data = json.loads(self._persist_path.read_text(encoding="utf-8"))
+        try:
+            data = json.loads(self._persist_path.read_text(encoding="utf-8"))
+        except (json.JSONDecodeError, UnicodeDecodeError) as e:
+            return
         for session_id, payload in data.items():
-            self._store[session_id] = SessionMemory(**payload)
+            if not payload or not isinstance(payload, dict):
+                continue
+            if "session_id" not in payload:
+                payload["session_id"] = session_id
+            try:
+                self._store[session_id] = SessionMemory(**payload)
+            except Exception:
+                continue
 
     def _save(self) -> None:
         if not self._persist_path:

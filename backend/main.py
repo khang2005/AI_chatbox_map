@@ -30,6 +30,10 @@ logging.basicConfig(
 logger = logging.getLogger(__name__)
 
 
+from starlette.middleware.base import BaseHTTPMiddleware
+from starlette.types import ASGIApp, Receive, Scope, Send
+
+
 def get_client_ip(request: Request) -> str:
     """Get client IP, considering reverse proxy."""
     x_forwarded_for = request.headers.get("X-Forwarded-For")
@@ -38,32 +42,36 @@ def get_client_ip(request: Request) -> str:
     return request.client.host if request.client else "unknown"
 
 
-async def log_requests(request: Request, call_next):
+class LogRequestsMiddleware(BaseHTTPMiddleware):
     """Log request IP, timestamp, and endpoint."""
-    start_time = time.time()
-    client_ip = get_client_ip(request)
-    
-    logger.info(f"Request: {request.method} {request.url.path} from {client_ip}")
-    
-    response = await call_next(request)
-    
-    process_time = time.time() - start_time
-    logger.info(f"Response: {response.status_code} in {process_time:.3f}s")
-    
-    return response
+
+    async def dispatch(self, request: Request, call_next):
+        start_time = time.time()
+        client_ip = get_client_ip(request)
+        
+        logger.info(f"Request: {request.method} {request.url.path} from {client_ip}")
+        
+        response = await call_next(request)
+        
+        process_time = time.time() - start_time
+        logger.info(f"Response: {response.status_code} in {process_time:.3f}s")
+        
+        return response
 
 
-async def limit_request_size(request: Request, call_next):
+class LimitRequestSizeMiddleware(BaseHTTPMiddleware):
     """Reject large request bodies."""
-    content_length = request.headers.get("content-length")
-    if content_length and int(content_length) > 1024 * 1024:  # 1MB
-        return JSONResponse(
-            status_code=status.HTTP_413_REQUEST_ENTITY_TOO_LARGE,
-            content={"error": "request_too_large"}
-        )
-    
-    response = await call_next(request)
-    return response
+
+    async def dispatch(self, request: Request, call_next):
+        content_length = request.headers.get("content-length")
+        if content_length and int(content_length) > 1024 * 1024:  # 1MB
+            return JSONResponse(
+                status_code=status.HTTP_413_REQUEST_ENTITY_TOO_LARGE,
+                content={"error": "request_too_large"}
+            )
+        
+        response = await call_next(request)
+        return response
 
 
 @asynccontextmanager
@@ -87,8 +95,8 @@ app = FastAPI(
     lifespan=lifespan
 )
 
-app.add_middleware(limit_request_size)
-app.add_middleware(log_requests)
+app.add_middleware(LimitRequestSizeMiddleware)
+app.add_middleware(LogRequestsMiddleware)
 app.add_middleware(
     CORSMiddleware,
     allow_origins=["*"],
