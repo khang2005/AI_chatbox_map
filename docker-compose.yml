@@ -1,11 +1,10 @@
-version: "3.9"
 services:
   frontend:
     build:
       context: ./frontend
       dockerfile: Dockerfile
     ports:
-      - "3000:3000"
+      - "3000:80"
     env_file:
       - ./frontend/.env
     volumes:
@@ -24,6 +23,3 @@ services:
       - ./backend/.env
     volumes:
       - ./backend:/app
-    network_mode: "host"
-    extra_hosts:
-      - "host.docker.internal:host-gateway"
