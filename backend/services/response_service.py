@@ -13,14 +13,14 @@ class ResponseService:
     def __init__(self):
         self.gemini = get_gemini_provider()
 
-    def generate(
+    async def generate(
         self,
         user_query: str,
         places: List[dict],
         directions: Optional[dict] = None,
         intent: Optional[Dict[str, Any]] = None
     ) -> str:
-        return self.gemini.generate_response(
+        return await self.gemini.generate_response(
             user_query=user_query,
             places=places,
             directions=directions,
@@ -39,7 +39,7 @@ class ResponseService:
         }
         return errors.get(error_type, "An error occurred. Please try again.")
 
-    def generate_follow_up(
+    async def generate_follow_up(
         self,
         query: str,
         context: dict,
@@ -53,7 +53,7 @@ class ResponseService:
                 else None
             )
             
-            return self.gemini.generate_response(
+            return await self.gemini.generate_response(
                 user_query=query,
                 places=context.get("last_results", [])[:3],
                 directions=context.get("current_route"),
@@ -67,7 +67,7 @@ class ResponseService:
                 }
             )
         
-        return self.gemini.generate_response(
+        return await self.gemini.generate_response(
             user_query=query,
             places=[],
             directions=None,

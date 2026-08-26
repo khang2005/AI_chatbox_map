@@ -10,9 +10,10 @@ class RankingService:
 
     # Weights for scoring
     WEIGHTS = {
-        "distance": 0.35,      # Closer is better
-        "poi_match": 0.25,     # POI vs street address
-        "text_match": 0.20,    # Name matches query
+        "distance": 0.30,      # Closer is better
+        "rating": 0.20,        # Higher rated is better
+        "poi_match": 0.15,     # POI vs street address
+        "text_match": 0.15,    # Name matches query
         "type_match": 0.10,    # Category matches
         "session_relevance": 0.10,  # Based on session context
     }
@@ -67,22 +68,19 @@ class RankingService:
         
         score = 0.0
         
-        # Distance score (0-1, closer is better)
-        dist = place.get("distance_km", 999)
-        if dist < 1:
-            dist_score = 1.0
-        elif dist < 5:
-            dist_score = 0.8
-        elif dist < 10:
-            dist_score = 0.6
-        elif dist < 20:
-            dist_score = 0.4
-        else:
-            dist_score = 0.2
+        # Distance score (0-1, smooth linear decay)
+        dist = place.get("distance_km") or 999
+        dist_score = max(0.0, 1.0 - (dist / 30.0))
         score += dist_score * self.WEIGHTS["distance"]
         
+        # Rating score (0-1, higher is better)
+        rating = place.get("rating")
+        if rating is not None and rating > 0:
+            rating_score = rating / 5.0
+            score += rating_score * self.WEIGHTS["rating"]
+        
         # POI vs Street score
-        is_poi = place.get("types", [None])[0] != "Feature"  # Feature = street in Mapbox
+        is_poi = place.get("poi_categories") and len(place.get("poi_categories", [])) > 0
         if is_poi:
             score += 1.0 * self.WEIGHTS["poi_match"]
         
@@ -93,18 +91,18 @@ class RankingService:
         elif any(w in name_lower for w in query_lower.split() if len(w) > 3):
             score += 0.5 * self.WEIGHTS["text_match"]
         
-        # Type match (if query has category keywords)
+        # Type match (use real POI categories)
         type_keywords = {
-            "cafe": ["cafe", "coffee"],
+            "cafe": ["cafe", "coffee", "espresso"],
             "restaurant": ["restaurant", "food", "dining"],
-            "gas_station": ["gas", "fuel"],
-            "pharmacy": ["pharmacy", "drug"],
-            "hotel": ["hotel", "motel", "inn"],
+            "gas_station": ["gas_station", "fuel"],
+            "pharmacy": ["pharmacy", "drugstore"],
+            "hotel": ["hotel", "lodging"],
         }
+        place_cats = [c.lower() for c in place.get("poi_categories", [])]
         for cat, keywords in type_keywords.items():
             if any(k in query_lower for k in keywords):
-                place_types = [t.lower() for t in place.get("types", [])]
-                if any(k in pt for pt in place_types for k in keywords):
+                if any(k in pc for pc in place_cats for k in keywords):
                     score += 0.5 * self.WEIGHTS["type_match"]
         
         # Session relevance (if user selected from previous results)

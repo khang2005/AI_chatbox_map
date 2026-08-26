@@ -1,35 +1,53 @@
 {
   "default": {
     "session_id": "default",
-    "last_user_query": "direct me to BPP paint store",
+    "last_user_query": "hello",
     "last_intent": {
-      "intent": "route",
+      "intent": "search_places",
       "sub_intent": null,
       "search_terms": [
-        "BPP paint store"
+        "hello"
       ],
       "filters": {},
       "follow_up_to_previous": false,
       "follow_up_mode": "none",
       "selected_index": null
     },
-    "last_results": [],
+    "last_results": [
+      {
+        "name": "Hello",
+        "place_id": "dXJuOm1ieHBvaTo3OTRhMGY0Mi04NTE1LTRiOWItODBkYy01ZmIwZjdlYjU4ODU",
+        "vicinity": "510 E Foothill Blvd, Rialto, California 92376, United States",
+        "location": {
+          "lat": 34.10695863,
+          "lng": -117.36108301
+        },
+        "rating": null,
+        "types": [
+          "Feature"
+        ],
+        "source": "mapbox",
+        "distance_km": 18.245336171523398,
+        "maps_deeplink": "https://www.mapbox.com/search/?api=1&query=34.10695863,-117.36108301",
+        "_rank_score": 0.33999999999999997
+      }
+    ],
     "selected_place": {
-      "name": "Main Street Outlets",
-      "place_id": "dXJuOm1ieHBvaTo0MTU3MzI3MS02OWQzLTRlODAtOGJkZS0xMGUwZDE2ZGNiZTA",
-      "vicinity": "214 W Holt Ave, Pomona, California 91768, United States",
+      "name": "Hello",
+      "place_id": "dXJuOm1ieHBvaTo3OTRhMGY0Mi04NTE1LTRiOWItODBkYy01ZmIwZjdlYjU4ODU",
+      "vicinity": "510 E Foothill Blvd, Rialto, California 92376, United States",
       "location": {
-        "lat": 34.0622355,
-        "lng": -117.75266628
+        "lat": 34.10695863,
+        "lng": -117.36108301
       },
       "rating": null,
       "types": [
         "Feature"
       ],
       "source": "mapbox",
-      "distance_km": 1.5299572904207486,
-      "maps_deeplink": "https://www.mapbox.com/search/?api=1&query=34.0622355,-117.75266628",
-      "_rank_score": 0.27999999999999997
+      "distance_km": 18.245336171523398,
+      "maps_deeplink": "https://www.mapbox.com/search/?api=1&query=34.10695863,-117.36108301",
+      "_rank_score": 0.33999999999999997
     },
     "current_route": {
       "origin": {
@@ -69,14 +87,256 @@
       "maps_deeplink": "https://www.mapbox.com/directions/?api=1&origin=34.061866164425986,-117.73603430732963&destination=34.06298375,-117.73046969&mode=driving"
     },
     "last_origin": {
-      "lat": 34.061866164425986,
-      "lng": -117.73603430732963
+      "lat": 34.1245952,
+      "lng": -117.5584768
     },
     "search_context": {
       "last_category": null,
       "last_area_name": null,
       "last_action": null
     },
-    "updated_at": 1776807414.9437346
+    "updated_at": 1785087690.552755
+  },
+  "test": {
+    "session_id": "test",
+    "last_user_query": null,
+    "last_intent": {},
+    "last_results": [],
+    "selected_place": null,
+    "current_route": null,
+    "last_origin": null,
+    "search_context": {
+      "last_category": null,
+      "last_area_name": null,
+      "last_action": null
+    },
+    "updated_at": 1785087682.6934576
+  },
+  "test3": {
+    "session_id": "test3",
+    "last_user_query": null,
+    "last_intent": {},
+    "last_results": [],
+    "selected_place": null,
+    "current_route": null,
+    "last_origin": null,
+    "search_context": {
+      "last_category": null,
+      "last_area_name": null,
+      "last_action": null
+    },
+    "updated_at": 1785179566.8928008
+  },
+  "test4": {
+    "session_id": "test4",
+    "last_user_query": "coffee nearby",
+    "last_intent": {
+      "intent": "search_places",
+      "sub_intent": null,
+      "search_terms": [
+        "coffee",
+        "coffee shop",
+        "cafe"
+      ],
+      "filters": {},
+      "follow_up_to_previous": false,
+      "follow_up_mode": "none",
+      "selected_index": null
+    },
+    "last_results": [
+      {
+        "name": "Thirsty Girl Coffee",
+        "place_id": "dXJuOm1ieHBvaTowYTIzOWJkOC0xN2FhLTRlOTctODkyZS01ZmI0MjY2NzJlYTU",
+        "vicinity": "9015 Central Ave Ste A, Montclair, California 91763, United States",
+        "location": {
+          "lat": 34.09028892,
+          "lng": -117.68921391
+        },
+        "rating": null,
+        "review_count": null,
+        "phone": "+19092299053",
+        "website": null,
+        "price": null,
+        "is_open": false,
+        "brand": null,
+        "poi_categories": [
+          "café",
+          "coffee",
+          "coffee shop",
+          "food",
+          "food and drink"
+        ],
+        "types": [
+          "poi"
+        ],
+        "source": "mapbox",
+        "distance_km": 1.4202733123756777,
+        "maps_deeplink": "https://www.mapbox.com/search/?api=1&query=34.09028892,-117.68921391",
+        "_rank_score": 0.5607972668762432
+      },
+      {
+        "name": "Más Cafecito",
+        "place_id": "dXJuOm1ieHBvaTo3MmVlODY2Zi0yY2NjLTQwY2QtYWNkMS0xNWE5NDkzMmQ5N2I",
+        "vicinity": "9617 Central Ave, Montclair, California 91763, United States",
+        "location": {
+          "lat": 34.07923012,
+          "lng": -117.68918927
+        },
+        "rating": null,
+        "review_count": null,
+        "phone": null,
+        "website": null,
+        "price": null,
+        "is_open": false,
+        "brand": null,
+        "poi_categories": [
+          "café",
+          "coffee",
+          "coffee shop",
+          "food",
+          "food and drink"
+        ],
+        "types": [
+          "poi"
+        ],
+        "source": "mapbox",
+        "distance_km": 0.19770044084449015,
+        "maps_deeplink": "https://www.mapbox.com/search/?api=1&query=34.07923012,-117.68918927",
+        "_rank_score": 0.4980229955915551
+      },
+      {
+        "name": "Starbucks",
+        "place_id": "dXJuOm1ieHBvaTpmNTA2NWYxOS00M2ZmLTQwNWUtYTUwNS1hNjFjYTY1MmY1OGM",
+        "vicinity": "9389 Central Avenue Unit B, Montclair, California 91763, United States",
+        "location": {
+          "lat": 34.0831546,
+          "lng": -117.6893018
+        },
+        "rating": null,
+        "review_count": null,
+        "phone": "+19095195296",
+        "website": "https://www.starbucks.com/store-locator/store/91071/",
+        "price": null,
+        "is_open": false,
+        "brand": "Starbucks",
+        "poi_categories": [
+          "café",
+          "coffee",
+          "coffee shop",
+          "food",
+          "food and drink"
+        ],
+        "types": [
+          "poi"
+        ],
+        "source": "mapbox",
+        "distance_km": 0.6287273202131902,
+        "maps_deeplink": "https://www.mapbox.com/search/?api=1&query=34.0831546,-117.6893018",
+        "_rank_score": 0.4937127267978681
+      },
+      {
+        "name": "Starbucks",
+        "place_id": "dXJuOm1ieHBvaTpkMzM5ZjBhYi01ZDY1LTQ0NTEtOTAyYy1iZjU4MzRiZDUxODY",
+        "vicinity": "5060 East Montclair Plaza Lane Suite 5067, Montclair, California 91763, United States",
+        "location": {
+          "lat": 34.0867882,
+          "lng": -117.6936188
+        },
+        "rating": null,
+        "review_count": null,
+        "phone": "+19095064448",
+        "website": "https://www.starbucks.com/store-locator/store/91071/",
+        "price": null,
+        "is_open": false,
+        "brand": "Starbucks",
+        "poi_categories": [
+          "café",
+          "coffee",
+          "coffee shop",
+          "food",
+          "food and drink"
+        ],
+        "types": [
+          "poi"
+        ],
+        "source": "mapbox",
+        "distance_km": 1.0921246270639473,
+        "maps_deeplink": "https://www.mapbox.com/search/?api=1&query=34.0867882,-117.6936188",
+        "_rank_score": 0.48907875372936044
+      },
+      {
+        "name": "Starbucks",
+        "place_id": "dXJuOm1ieHBvaTo1YjkwOWJhZS04YjRmLTQ3YTQtOTgxZS1hMzU5MWU5ZjYxZTY",
+        "vicinity": "9052 Central Avenue, Montclair, California 91763, United States",
+        "location": {
+          "lat": 34.0903205871582,
+          "lng": -117.69104766845705
+        },
+        "rating": null,
+        "review_count": null,
+        "phone": "+19096245717",
+        "website": null,
+        "price": null,
+        "is_open": false,
+        "brand": "Starbucks",
+        "poi_categories": [
+          "bakery",
+          "café",
+          "coffee",
+          "coffee shop",
+          "food",
+          "food and drink",
+          "teahouse"
+        ],
+        "types": [
+          "poi"
+        ],
+        "source": "mapbox",
+        "distance_km": 1.4284681159289938,
+        "maps_deeplink": "https://www.mapbox.com/search/?api=1&query=34.0903205871582,-117.69104766845705",
+        "_rank_score": 0.48571531884071
+      }
+    ],
+    "selected_place": {
+      "name": "Thirsty Girl Coffee",
+      "place_id": "dXJuOm1ieHBvaTowYTIzOWJkOC0xN2FhLTRlOTctODkyZS01ZmI0MjY2NzJlYTU",
+      "vicinity": "9015 Central Ave Ste A, Montclair, California 91763, United States",
+      "location": {
+        "lat": 34.09028892,
+        "lng": -117.68921391
+      },
+      "rating": null,
+      "review_count": null,
+      "phone": "+19092299053",
+      "website": null,
+      "price": null,
+      "is_open": false,
+      "brand": null,
+      "poi_categories": [
+        "café",
+        "coffee",
+        "coffee shop",
+        "food",
+        "food and drink"
+      ],
+      "types": [
+        "poi"
+      ],
+      "source": "mapbox",
+      "distance_km": 1.4202733123756777,
+      "maps_deeplink": "https://www.mapbox.com/search/?api=1&query=34.09028892,-117.68921391",
+      "_rank_score": 0.5607972668762432
+    },
+    "current_route": null,
+    "last_origin": {
+      "lat": 34.0775,
+      "lng": -117.6897
+    },
+    "search_context": {
+      "last_category": "coffee",
+      "last_area_name": null,
+      "last_action": null
+    },
+    "updated_at": 1785179807.961405
   }
 }

@@ -81,15 +81,26 @@ class PlaceSearchService:
             
             lng, lat = coords[0], coords[1]
             
+            metadata = props.get("metadata", {})
+            poi_categories = props.get("poi_category") or []
+            brand_list = props.get("brand") or []
+
             place = {
                 "name": props.get("name") or r.get("text") or "Unknown Place",
                 "place_id": props.get("mapbox_id") or r.get("id"),
                 "vicinity": props.get("full_address") or props.get("address") or r.get("place_name", ""),
                 "location": {"lat": lat, "lng": lng},
-                "rating": None,
-                "types": [r.get("type")],
+                "rating": metadata.get("rating"),
+                "review_count": metadata.get("review_count"),
+                "phone": metadata.get("phone"),
+                "website": metadata.get("website"),
+                "price": metadata.get("price"),
+                "is_open": props.get("operational_status") == "active",
+                "brand": brand_list[0] if brand_list else None,
+                "poi_categories": poi_categories,
+                "types": [props.get("feature_type")] if props.get("feature_type") else [r.get("type")],
                 "source": "mapbox",
-                "distance_km": r.get("_dist"),
+                "distance_km": r.get("_dist") or (props.get("distance", 0) / 1000),
                 "maps_deeplink": f"https://www.mapbox.com/search/?api=1&query={lat},{lng}"
             }
             normalized.append(place)

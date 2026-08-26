@@ -13,6 +13,13 @@ class PlaceResult(BaseModel):
     vicinity: Optional[str] = None
     location: Location
     rating: Optional[float] = None
+    review_count: Optional[int] = None
+    phone: Optional[str] = None
+    website: Optional[str] = None
+    price: Optional[str] = None
+    is_open: Optional[bool] = None
+    brand: Optional[str] = None
+    poi_categories: List[str] = Field(default_factory=list)
     types: List[str] = Field(default_factory=list)
     source: str = "mapbox"
     distance_km: Optional[float] = None

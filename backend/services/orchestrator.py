@@ -58,7 +58,7 @@ class Orchestrator:
         is_replacement = self._looks_like_replacement_search(query, intent)
         
         if self._should_reuse_previous_results(query, intent, session_context):
-            return self._handle_follow_up(
+            return await self._handle_follow_up(
                 query, origin, intent, session_context, session_id, mode
             )
         
@@ -122,7 +122,7 @@ class Orchestrator:
                 directions = [route_result]
                 new_route = route_result
         
-        response_text = self.response.generate(
+        response_text = await self.response.generate(
             user_query=query,
             places=ranked_places,
             directions=directions[0] if directions else None,
@@ -249,7 +249,7 @@ class Orchestrator:
             "directions": []
         }
 
-    def _handle_follow_up(
+    async def _handle_follow_up(
         self,
         query: str,
         origin: Tuple[float, float],
@@ -281,7 +281,7 @@ class Orchestrator:
                     directions = [route_result]
                     new_route = route_result
             
-            response_text = self.response.generate(
+            response_text = await self.response.generate(
                 user_query=query,
                 places=[selected],
                 directions=directions[0] if directions else None,
@@ -301,7 +301,7 @@ class Orchestrator:
                 "directions": directions
             }
         
-        response_text = self.response.generate_follow_up(
+        response_text = await self.response.generate_follow_up(
             query=query,
             context=session_context,
             is_result_reference=True

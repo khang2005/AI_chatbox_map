@@ -18,9 +18,9 @@ class GeminiProvider:
     def __init__(self):
         api_key = get_gemini_key()
         genai.configure(api_key=api_key)
-        self.model = genai.GenerativeModel("gemini-2.0-flash")
+        self.model = genai.GenerativeModel("gemini-flash-latest")
         self.max_retries = 3
-        self.timeout = 5
+        self.timeout = 15
         self.max_tokens = 1000
 
     async def extract_intent(
@@ -144,11 +144,40 @@ Return ONLY valid JSON, no explanations:"""
         
         places_info = ""
         if places:
-            places_info = "\n".join([
-                f"- {p.get('name', 'Unknown')} at {p.get('location', {}).get('lat', 0)}, {p.get('location', {}).get('lng', 0)}"
-                f" ({p.get('vicinity', 'No address')})"
-                for p in places[:3]
-            ])
+            parts = []
+            for p in places[:3]:
+                line = f"- {p.get('name', 'Unknown')}"
+                dist = p.get("distance_km")
+                if dist is not None:
+                    line += f" — {dist:.1f} km away"
+                rating = p.get("rating")
+                if rating is not None:
+                    line += f", rated {rating}/5"
+                review_count = p.get("review_count")
+                if review_count is not None:
+                    line += f" ({review_count} reviews)"
+                price = p.get("price")
+                if price:
+                    line += f", {price}"
+                is_open = p.get("is_open")
+                if is_open is True:
+                    line += ", open now"
+                elif is_open is False:
+                    line += ", currently closed"
+                address = p.get("vicinity", "")
+                if address:
+                    line += f"\n  Address: {address}"
+                phone = p.get("phone")
+                if phone:
+                    line += f"\n  Phone: {phone}"
+                website = p.get("website")
+                if website:
+                    line += f"\n  Website: {website}"
+                cats = p.get("poi_categories", [])
+                if cats:
+                    line += f"\n  Categories: {', '.join(cats)}"
+                parts.append(line)
+            places_info = "\n".join(parts)
         
         route_info = ""
         if directions:
@@ -159,7 +188,7 @@ Route found:
 - Mode: {directions.get('mode', 'driving')}
 """
         
-        prompt = f"""You are a helpful map assistant. Respond to the user's query about locations, places, or directions.
+        prompt = f"""You are a knowledgeable local guide. Respond to the user's query about places with detailed, helpful information.
 
 User query: {user_query}
 
@@ -170,7 +199,14 @@ Found places:
 
 {route_info}
 
-Keep responses concise, friendly, and mention the places found. If directions are available, mention them.
+Instructions:
+- Be conversational and enthusiastic, like a local friend recommending spots
+- Mention distances, ratings, and prices when available
+- If places are found, briefly describe each one and what makes it notable
+- Compare options when multiple results exist (e.g., "Starbucks is closer, but Peet's has better reviews")
+- If a route is available, mention the travel time and distance
+- If no places found, suggest broadening the search
+- Keep responses detailed but not overwhelming (2-4 sentences per place)
 Response:"""
 
         for attempt in range(self.max_retries):

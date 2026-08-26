@@ -1,8 +1,8 @@
 from __future__ import annotations
 
+import json
 import logging
 from typing import Any, Dict
-from functools import lru_cache
 
 from providers.gemini_provider import GeminiProvider
 
@@ -13,37 +13,15 @@ class IntentService:
     def __init__(self, gemini_provider: GeminiProvider) -> None:
         self.gemini_provider = gemini_provider
 
-    @lru_cache(maxsize=100)
-    def extract_intent_cached(self, query: str, session_context_json: str) -> Dict[str, Any]:
-        """Extract intent with caching to avoid duplicate Gemini calls."""
-        session_context = eval(session_context_json) if session_context_json else {}
-        return self._extract_intent_internal(query, session_context)
-
     async def extract_intent(self, query: str, session_context: Dict[str, Any]) -> Dict[str, Any]:
         """Extract intent using Gemini with fallback to rule-based detection."""
         try:
-            # Try to use cached result first
-            session_context_json = str(session_context) if session_context else ""
-            try:
-                return self.extract_intent_cached(query, session_context_json)
-            except:
-                # Cache miss or error, proceed with normal extraction
-                pass
-            
-            # Try Gemini first
             intent = await self.gemini_provider.extract_intent(query, session_context)
-            
         except Exception as e:
             logger.error(f"Gemini intent extraction failed: {e}")
-            # Fallback to rule-based intent detection
             intent = self._fallback_intent(query)
         
         return self._normalize_intent(intent)
-
-    def _extract_intent_internal(self, query: str, session_context: Dict[str, Any]) -> Dict[str, Any]:
-        """Internal method for Gemini intent extraction."""
-        import asyncio
-        return asyncio.run(self.gemini_provider.extract_intent(query, session_context))
 
     def _normalize_intent(self, intent: Dict[str, Any]) -> Dict[str, Any]:
         """Normalize intent structure."""
