@@ -4,9 +4,14 @@ This file provides guidelines for agentic coding agents operating in this reposi
 
 ## Build/Lint/Test Commands
 
-*   **Start Services:** `./start.sh` (from project root)
+*   **Start Services (Docker):** `docker compose up -d --build`
+*   **Stop Services:** `docker compose down`
+*   **View Logs:** `docker compose logs -f`
 *   **Test:** `cd backend && source .venv/bin/activate && PYTHONPATH=. pytest tests/ -v`
 *   **Run a single test:** `pytest <test_file_path> -k <test_name>`
+*   **Frontend:** http://localhost:3000
+*   **Backend API:** http://localhost:8000
+*   **Health Check:** http://localhost:8000/health
 
 ## Code Style Guidelines
 
