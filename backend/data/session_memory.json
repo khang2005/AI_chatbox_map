@@ -1,12 +1,15 @@
 {
   "default": {
     "session_id": "default",
-    "last_user_query": "hello",
+    "last_user_query": "can you get me to a nearby coffee places?",
     "last_intent": {
       "intent": "search_places",
       "sub_intent": null,
       "search_terms": [
-        "hello"
+        "coffee shop",
+        "cafe",
+        "coffee places",
+        "coffee"
       ],
       "filters": {},
       "follow_up_to_previous": false,
@@ -15,102 +18,494 @@
     },
     "last_results": [
       {
-        "name": "Hello",
-        "place_id": "dXJuOm1ieHBvaTo3OTRhMGY0Mi04NTE1LTRiOWItODBkYy01ZmIwZjdlYjU4ODU",
-        "vicinity": "510 E Foothill Blvd, Rialto, California 92376, United States",
+        "name": "Starbucks",
+        "place_id": "dXJuOm1ieHBvaTpkYmJiMmYxNi1jNTk3LTQ5MmQtYjdkNi1jNjJhODVjZmE4MmQ",
+        "vicinity": "3801 West Temple Avenue, Pomona, California 91768, United States",
         "location": {
-          "lat": 34.10695863,
-          "lng": -117.36108301
+          "lat": 34.05772018432617,
+          "lng": -117.82146453857422
         },
         "rating": null,
+        "review_count": null,
+        "phone": "+19098694744",
+        "website": "https://www.starbucks.com/store-locator",
+        "price": null,
+        "is_open": false,
+        "brand": "Starbucks",
+        "poi_categories": [
+          "bakery",
+          "café",
+          "coffee",
+          "coffee shop",
+          "food",
+          "food and drink",
+          "teahouse"
+        ],
         "types": [
-          "Feature"
+          "poi"
         ],
         "source": "mapbox",
-        "distance_km": 18.245336171523398,
-        "maps_deeplink": "https://www.mapbox.com/search/?api=1&query=34.10695863,-117.36108301",
-        "_rank_score": 0.33999999999999997
+        "distance_km": 0.16766430288480508,
+        "maps_deeplink": "https://www.mapbox.com/search/?api=1&query=34.05772018432617,-117.82146453857422",
+        "_rank_score": 0.4983233569711519
+      },
+      {
+        "name": "Saddles Cafe",
+        "place_id": "dXJuOm1ieHBvaTozMjAxNmI1MS0zZjA4LTRjY2ItYTE2MC04NmEzMmY1OGZiNDc",
+        "vicinity": "3801 W Temple Ave, Pomona, California 91768, United States",
+        "location": {
+          "lat": 34.05587449,
+          "lng": -117.82108531
+        },
+        "rating": null,
+        "review_count": null,
+        "phone": null,
+        "website": "http://cppdining.com/",
+        "price": null,
+        "is_open": false,
+        "brand": null,
+        "poi_categories": [
+          "café",
+          "coffee",
+          "coffee shop",
+          "food",
+          "food and drink"
+        ],
+        "types": [
+          "poi"
+        ],
+        "source": "mapbox",
+        "distance_km": 0.3560743697802836,
+        "maps_deeplink": "https://www.mapbox.com/search/?api=1&query=34.05587449,-117.82108531",
+        "_rank_score": 0.49643925630219715
+      },
+      {
+        "name": "Starbucks",
+        "place_id": "dXJuOm1ieHBvaTo1YjgyOGI0MC05Mjk3LTQ2MDgtYjkzYi1mMWM5NzRiMjUzZjc",
+        "vicinity": "3423 Pomona Boulevard, Pomona, California 91768, United States",
+        "location": {
+          "lat": 34.047664642333984,
+          "lng": -117.81092834472656
+        },
+        "rating": null,
+        "review_count": null,
+        "phone": null,
+        "website": null,
+        "price": null,
+        "is_open": false,
+        "brand": "Starbucks",
+        "poi_categories": [
+          "bakery",
+          "café",
+          "coffee",
+          "coffee shop",
+          "food",
+          "food and drink",
+          "teahouse"
+        ],
+        "types": [
+          "poi"
+        ],
+        "source": "mapbox",
+        "distance_km": 1.547336012895393,
+        "maps_deeplink": "https://www.mapbox.com/search/?api=1&query=34.047664642333984,-117.81092834472656",
+        "_rank_score": 0.484526639871046
+      },
+      {
+        "name": "Starbucks",
+        "place_id": "dXJuOm1ieHBvaTo2YWQ1NDY0ZC1jMWJkLTRiM2YtYjM4Ny1kZDcwZjViNDU2N2M",
+        "vicinity": "3044 Temple Avenue, Pomona, California 91766, United States",
+        "location": {
+          "lat": 34.04170608520508,
+          "lng": -117.79837036132812
+        },
+        "rating": null,
+        "review_count": null,
+        "phone": null,
+        "website": null,
+        "price": null,
+        "is_open": false,
+        "brand": "Starbucks",
+        "poi_categories": [
+          "bakery",
+          "café",
+          "coffee",
+          "coffee shop",
+          "food",
+          "food and drink",
+          "teahouse"
+        ],
+        "types": [
+          "poi"
+        ],
+        "source": "mapbox",
+        "distance_km": 2.8102918280863114,
+        "maps_deeplink": "https://www.mapbox.com/search/?api=1&query=34.04170608520508,-117.79837036132812",
+        "_rank_score": 0.47189708171913686
+      },
+      {
+        "name": "LovChCh",
+        "place_id": "dXJuOm1ieHBvaTo2NmZjZWNkZC1hZjNlLTRkMmEtOGU0Yi04NjZiMjI2MTJlNGU",
+        "vicinity": "20747 Amar Rd #8D, Walnut, California 91789, United States",
+        "location": {
+          "lat": 34.043189,
+          "lng": -117.84996626
+        },
+        "rating": null,
+        "review_count": null,
+        "phone": "+19096127053",
+        "website": "https://www.lovchch.com/",
+        "price": null,
+        "is_open": false,
+        "brand": null,
+        "poi_categories": [
+          "café",
+          "coffee",
+          "coffee shop",
+          "food",
+          "food and drink"
+        ],
+        "types": [
+          "poi"
+        ],
+        "source": "mapbox",
+        "distance_km": 3.222874861225375,
+        "maps_deeplink": "https://www.mapbox.com/search/?api=1&query=34.043189,-117.84996626",
+        "_rank_score": 0.46777125138774617
       }
     ],
     "selected_place": {
-      "name": "Hello",
-      "place_id": "dXJuOm1ieHBvaTo3OTRhMGY0Mi04NTE1LTRiOWItODBkYy01ZmIwZjdlYjU4ODU",
-      "vicinity": "510 E Foothill Blvd, Rialto, California 92376, United States",
+      "name": "Starbucks",
+      "place_id": "dXJuOm1ieHBvaTpkYmJiMmYxNi1jNTk3LTQ5MmQtYjdkNi1jNjJhODVjZmE4MmQ",
+      "vicinity": "3801 West Temple Avenue, Pomona, California 91768, United States",
       "location": {
-        "lat": 34.10695863,
-        "lng": -117.36108301
+        "lat": 34.05772018432617,
+        "lng": -117.82146453857422
       },
       "rating": null,
+      "review_count": null,
+      "phone": "+19098694744",
+      "website": "https://www.starbucks.com/store-locator",
+      "price": null,
+      "is_open": false,
+      "brand": "Starbucks",
+      "poi_categories": [
+        "bakery",
+        "café",
+        "coffee",
+        "coffee shop",
+        "food",
+        "food and drink",
+        "teahouse"
+      ],
       "types": [
-        "Feature"
+        "poi"
       ],
       "source": "mapbox",
-      "distance_km": 18.245336171523398,
-      "maps_deeplink": "https://www.mapbox.com/search/?api=1&query=34.10695863,-117.36108301",
-      "_rank_score": 0.33999999999999997
+      "distance_km": 0.16766430288480508,
+      "maps_deeplink": "https://www.mapbox.com/search/?api=1&query=34.05772018432617,-117.82146453857422",
+      "_rank_score": 0.4983233569711519
     },
     "current_route": {
       "origin": {
-        "lat": 34.061866164425986,
-        "lng": -117.73603430732963
+        "lat": 34.0590592,
+        "lng": -117.8206208
       },
       "destination": {
-        "lat": 34.06298375,
-        "lng": -117.73046969
+        "lat": 34.05772018432617,
+        "lng": -117.82146453857422
       },
       "mode": "driving",
-      "distance_text": 618.921,
-      "duration_text": 91.495,
-      "polyline": "gu{nEdirmUEqF?MwA@eA@Y@A{@G{E?KA}AA{@As@?E?kBCiBAy@?k@?EAa@?A",
+      "distance_text": 3951.911,
+      "duration_text": 554.842,
+      "polyline": "sg{nE`qbnUEBE?G?EAECIGcBwAGGEECIAG?IAS?E?S?O?GAWCYIu@Ig@?KCMCEC?AGGQWo@[k@c@k@g@e@HU^u@P_@P]LWHQJFNPZXBFT\\TVFD^p@b@~@FNR?HIDINu@H_@@ELWBERUHNd@l@BDHJ??~AfBPVNTf@x@LZNM\\]RSPQp@q@VSXS`H_DhB{@LGLGBAHEJEHETGPMLMX]RYVc@HODIR]DWBGVe@PYNWVTfB~Ax@t@Vb@ZV@@d@\\R@pBtA`DxBj@^dAr@NJI`@?B???@Kj@Gl@K`AIbA?JCj@Av@A`D?xB?p@?rA?XSAa@?OAIAK?IAKCKAIAI?G?G@G@IBG@a@NwAj@w@XuBx@QHKDMFIFGFIHGJIJGLELCNCLCNANARDfA@d@Bj@FbA@\\ARALCNCPENEJEJIJq@|@KPELEPETANAN?TDrB@v@?P?D?@?FCNEJCJEHIJIHGHOHuAt@c@Pa@LmC|@a@LWHI_@EKEMEGEGGEGEICICICICGEKGQOKOGOES]wBCWAQC_@?Ia@aBAQEi@AI?M@UCWCa@?QD]Hs@?KAQIyAAUYMKACCAIAOEy@",
       "steps": [
         {
-          "instruction": "Drive east on East Hawthorne Place.",
-          "distance_text": 118.621,
+          "instruction": "Drive north on Voorhis Circle.",
+          "distance_text": 236.044,
           "type": "depart"
         },
         {
-          "instruction": "Turn left onto North Mountain View Avenue.",
-          "distance_text": 102.46,
+          "instruction": "Continue on Magnolia Lane.",
+          "distance_text": 122.292,
+          "type": "new name"
+        },
+        {
+          "instruction": "Turn right onto Cypress Lane.",
+          "distance_text": 100.754,
           "type": "turn"
         },
         {
-          "instruction": "Turn right onto East Holt Avenue.",
-          "distance_text": 397.84,
+          "instruction": "Turn right onto Oak Lane.",
+          "distance_text": 157.666,
+          "type": "turn"
+        },
+        {
+          "instruction": "Turn left onto Palm Drive.",
+          "distance_text": 101.193,
+          "type": "turn"
+        },
+        {
+          "instruction": "Turn right onto Kellogg Drive.",
+          "distance_text": 200.961,
           "type": "end of road"
         },
         {
-          "instruction": "Your destination is on the left.",
+          "instruction": "Turn left to stay on Kellogg Drive.",
+          "distance_text": 604.353,
+          "type": "continue"
+        },
+        {
+          "instruction": "Turn right onto South Campus Drive.",
+          "distance_text": 474.942,
+          "type": "turn"
+        },
+        {
+          "instruction": "Turn right onto West Temple Avenue.",
+          "distance_text": 381.762,
+          "type": "turn"
+        },
+        {
+          "instruction": "Turn right onto University Drive.",
+          "distance_text": 1044.884,
+          "type": "turn"
+        },
+        {
+          "instruction": "Turn right onto Camphor Lane.",
+          "distance_text": 461.646,
+          "type": "turn"
+        },
+        {
+          "instruction": "Turn left.",
+          "distance_text": 65.413,
+          "type": "turn"
+        },
+        {
+          "instruction": "You have arrived at your destination.",
           "distance_text": 0,
           "type": "arrive"
         }
       ],
-      "maps_deeplink": "https://www.mapbox.com/directions/?api=1&origin=34.061866164425986,-117.73603430732963&destination=34.06298375,-117.73046969&mode=driving"
+      "maps_deeplink": "https://www.mapbox.com/directions/?api=1&origin=34.0590592,-117.8206208&destination=34.05772018432617,-117.82146453857422&mode=driving"
     },
     "last_origin": {
-      "lat": 34.1245952,
-      "lng": -117.5584768
+      "lat": 34.0590592,
+      "lng": -117.8206208
     },
     "search_context": {
-      "last_category": null,
+      "last_category": "coffee",
       "last_area_name": null,
       "last_action": null
     },
-    "updated_at": 1785087690.552755
+    "updated_at": 1787776620.1038716
   },
   "test": {
     "session_id": "test",
-    "last_user_query": null,
-    "last_intent": {},
-    "last_results": [],
-    "selected_place": null,
+    "last_user_query": "coffee nearby",
+    "last_intent": {
+      "intent": "search_places",
+      "sub_intent": null,
+      "search_terms": [
+        "coffee",
+        "coffee shop",
+        "cafe"
+      ],
+      "filters": {},
+      "follow_up_to_previous": false,
+      "follow_up_mode": "none",
+      "selected_index": null
+    },
+    "last_results": [
+      {
+        "name": "Dutch Bros. Coffee",
+        "place_id": "dXJuOm1ieHBvaTo5MjY2ZDA2NC0xMDA0LTQ1NGMtOTliMy1kMmYyNGIxNmFlNTQ",
+        "vicinity": "9752 Central Ave, Montclair, California 91763, United States",
+        "location": {
+          "lat": 34.07648828,
+          "lng": -117.68972127
+        },
+        "rating": null,
+        "review_count": null,
+        "phone": "+18778992767",
+        "website": "https://www.dutchbros.com/locations/ca/montclair/9752-central-ave",
+        "price": null,
+        "is_open": false,
+        "brand": "Dutch Bros Coffee",
+        "poi_categories": [
+          "café",
+          "coffee",
+          "coffee shop",
+          "food",
+          "food and drink"
+        ],
+        "types": [
+          "poi"
+        ],
+        "source": "mapbox",
+        "distance_km": 0.11231794529724992,
+        "maps_deeplink": "https://www.mapbox.com/search/?api=1&query=34.07648828,-117.68972127",
+        "_rank_score": 0.6238768205470275
+      },
+      {
+        "name": "Más Cafecito Coffee",
+        "place_id": "dXJuOm1ieHBvaTo3MmVlODY2Zi0yY2NjLTQwY2QtYWNkMS0xNWE5NDkzMmQ5N2I",
+        "vicinity": "9617 Central Ave, Montclair, California 91763, United States",
+        "location": {
+          "lat": 34.07923012,
+          "lng": -117.68918927
+        },
+        "rating": null,
+        "review_count": null,
+        "phone": null,
+        "website": null,
+        "price": null,
+        "is_open": false,
+        "brand": null,
+        "poi_categories": [
+          "café",
+          "coffee",
+          "coffee shop",
+          "food",
+          "food and drink"
+        ],
+        "types": [
+          "poi"
+        ],
+        "source": "mapbox",
+        "distance_km": 0.19770044084449015,
+        "maps_deeplink": "https://www.mapbox.com/search/?api=1&query=34.07923012,-117.68918927",
+        "_rank_score": 0.6230229955915552
+      },
+      {
+        "name": "Starbucks",
+        "place_id": "dXJuOm1ieHBvaTpmNTA2NWYxOS00M2ZmLTQwNWUtYTUwNS1hNjFjYTY1MmY1OGM",
+        "vicinity": "9389 Central Avenue Unit B, Montclair, California 91763, United States",
+        "location": {
+          "lat": 34.0831546,
+          "lng": -117.6893018
+        },
+        "rating": null,
+        "review_count": null,
+        "phone": "+19095195296",
+        "website": "https://www.starbucks.com/store-locator/store/91071/",
+        "price": null,
+        "is_open": false,
+        "brand": "Starbucks",
+        "poi_categories": [
+          "café",
+          "coffee",
+          "coffee shop",
+          "food",
+          "food and drink"
+        ],
+        "types": [
+          "poi"
+        ],
+        "source": "mapbox",
+        "distance_km": 0.6287273202131902,
+        "maps_deeplink": "https://www.mapbox.com/search/?api=1&query=34.0831546,-117.6893018",
+        "_rank_score": 0.5437127267978681
+      },
+      {
+        "name": "Starbucks",
+        "place_id": "dXJuOm1ieHBvaTpkMzM5ZjBhYi01ZDY1LTQ0NTEtOTAyYy1iZjU4MzRiZDUxODY",
+        "vicinity": "5060 East Montclair Plaza Lane Suite 5067, Montclair, California 91763, United States",
+        "location": {
+          "lat": 34.0867882,
+          "lng": -117.6936188
+        },
+        "rating": null,
+        "review_count": null,
+        "phone": "+19095064448",
+        "website": "https://www.starbucks.com/store-locator/store/91071/",
+        "price": null,
+        "is_open": false,
+        "brand": "Starbucks",
+        "poi_categories": [
+          "café",
+          "coffee",
+          "coffee shop",
+          "food",
+          "food and drink"
+        ],
+        "types": [
+          "poi"
+        ],
+        "source": "mapbox",
+        "distance_km": 1.0921246270639473,
+        "maps_deeplink": "https://www.mapbox.com/search/?api=1&query=34.0867882,-117.6936188",
+        "_rank_score": 0.5390787537293604
+      },
+      {
+        "name": "727 Cafe",
+        "place_id": "dXJuOm1ieHBvaTowYzdiNDVlYy1hOTRiLTQzNzYtYTllYy1mY2Q0YTczOTczMTQ",
+        "vicinity": "Yes, Montclair, California 91763, United States",
+        "location": {
+          "lat": 34.07457227,
+          "lng": -117.69628711
+        },
+        "rating": null,
+        "review_count": null,
+        "phone": null,
+        "website": null,
+        "price": null,
+        "is_open": false,
+        "brand": null,
+        "poi_categories": [
+          "coffee",
+          "food",
+          "food and drink"
+        ],
+        "types": [
+          "poi"
+        ],
+        "source": "mapbox",
+        "distance_km": 0.6873068349417482,
+        "maps_deeplink": "https://www.mapbox.com/search/?api=1&query=34.07457227,-117.69628711",
+        "_rank_score": 0.49312693165058247
+      }
+    ],
+    "selected_place": {
+      "name": "Dutch Bros. Coffee",
+      "place_id": "dXJuOm1ieHBvaTo5MjY2ZDA2NC0xMDA0LTQ1NGMtOTliMy1kMmYyNGIxNmFlNTQ",
+      "vicinity": "9752 Central Ave, Montclair, California 91763, United States",
+      "location": {
+        "lat": 34.07648828,
+        "lng": -117.68972127
+      },
+      "rating": null,
+      "review_count": null,
+      "phone": "+18778992767",
+      "website": "https://www.dutchbros.com/locations/ca/montclair/9752-central-ave",
+      "price": null,
+      "is_open": false,
+      "brand": "Dutch Bros Coffee",
+      "poi_categories": [
+        "café",
+        "coffee",
+        "coffee shop",
+        "food",
+        "food and drink"
+      ],
+      "types": [
+        "poi"
+      ],
+      "source": "mapbox",
+      "distance_km": 0.11231794529724992,
+      "maps_deeplink": "https://www.mapbox.com/search/?api=1&query=34.07648828,-117.68972127",
+      "_rank_score": 0.6238768205470275
+    },
     "current_route": null,
-    "last_origin": null,
+    "last_origin": {
+      "lat": 34.0775,
+      "lng": -117.6897
+    },
     "search_context": {
-      "last_category": null,
+      "last_category": "coffee",
       "last_area_name": null,
       "last_action": null
     },
-    "updated_at": 1785087682.6934576
+    "updated_at": 1787776497.7323308
   },
   "test3": {
     "session_id": "test3",
@@ -338,5 +733,213 @@
       "last_action": null
     },
     "updated_at": 1785179807.961405
+  },
+  "test123": {
+    "session_id": "test123",
+    "last_user_query": "coffee nearby",
+    "last_intent": {
+      "intent": "search_places",
+      "sub_intent": null,
+      "search_terms": [
+        "coffee",
+        "coffee shop",
+        "cafe"
+      ],
+      "filters": {},
+      "follow_up_to_previous": false,
+      "follow_up_mode": "none",
+      "selected_index": null
+    },
+    "last_results": [
+      {
+        "name": "Dutch Bros. Coffee",
+        "place_id": "dXJuOm1ieHBvaTo5MjY2ZDA2NC0xMDA0LTQ1NGMtOTliMy1kMmYyNGIxNmFlNTQ",
+        "vicinity": "9752 Central Ave, Montclair, California 91763, United States",
+        "location": {
+          "lat": 34.07648828,
+          "lng": -117.68972127
+        },
+        "rating": null,
+        "review_count": null,
+        "phone": "+18778992767",
+        "website": "https://www.dutchbros.com/locations/ca/montclair/9752-central-ave",
+        "price": null,
+        "is_open": false,
+        "brand": "Dutch Bros Coffee",
+        "poi_categories": [
+          "café",
+          "coffee",
+          "coffee shop",
+          "food",
+          "food and drink"
+        ],
+        "types": [
+          "poi"
+        ],
+        "source": "mapbox",
+        "distance_km": 0.11231794529724992,
+        "maps_deeplink": "https://www.mapbox.com/search/?api=1&query=34.07648828,-117.68972127",
+        "_rank_score": 0.5738768205470275
+      },
+      {
+        "name": "Más Cafecito Coffee",
+        "place_id": "dXJuOm1ieHBvaTo3MmVlODY2Zi0yY2NjLTQwY2QtYWNkMS0xNWE5NDkzMmQ5N2I",
+        "vicinity": "9617 Central Ave, Montclair, California 91763, United States",
+        "location": {
+          "lat": 34.07923012,
+          "lng": -117.68918927
+        },
+        "rating": null,
+        "review_count": null,
+        "phone": null,
+        "website": null,
+        "price": null,
+        "is_open": false,
+        "brand": null,
+        "poi_categories": [
+          "café",
+          "coffee",
+          "coffee shop",
+          "food",
+          "food and drink"
+        ],
+        "types": [
+          "poi"
+        ],
+        "source": "mapbox",
+        "distance_km": 0.19770044084449015,
+        "maps_deeplink": "https://www.mapbox.com/search/?api=1&query=34.07923012,-117.68918927",
+        "_rank_score": 0.5730229955915551
+      },
+      {
+        "name": "Starbucks",
+        "place_id": "dXJuOm1ieHBvaTpmNTA2NWYxOS00M2ZmLTQwNWUtYTUwNS1hNjFjYTY1MmY1OGM",
+        "vicinity": "9389 Central Avenue Unit B, Montclair, California 91763, United States",
+        "location": {
+          "lat": 34.0831546,
+          "lng": -117.6893018
+        },
+        "rating": null,
+        "review_count": null,
+        "phone": "+19095195296",
+        "website": "https://www.starbucks.com/store-locator/store/91071/",
+        "price": null,
+        "is_open": false,
+        "brand": "Starbucks",
+        "poi_categories": [
+          "café",
+          "coffee",
+          "coffee shop",
+          "food",
+          "food and drink"
+        ],
+        "types": [
+          "poi"
+        ],
+        "source": "mapbox",
+        "distance_km": 0.6287273202131902,
+        "maps_deeplink": "https://www.mapbox.com/search/?api=1&query=34.0831546,-117.6893018",
+        "_rank_score": 0.4937127267978681
+      },
+      {
+        "name": "727 Cafe",
+        "place_id": "dXJuOm1ieHBvaTowYzdiNDVlYy1hOTRiLTQzNzYtYTllYy1mY2Q0YTczOTczMTQ",
+        "vicinity": "Yes, Montclair, California 91763, United States",
+        "location": {
+          "lat": 34.07457227,
+          "lng": -117.69628711
+        },
+        "rating": null,
+        "review_count": null,
+        "phone": null,
+        "website": null,
+        "price": null,
+        "is_open": false,
+        "brand": null,
+        "poi_categories": [
+          "coffee",
+          "food",
+          "food and drink"
+        ],
+        "types": [
+          "poi"
+        ],
+        "source": "mapbox",
+        "distance_km": 0.6873068349417482,
+        "maps_deeplink": "https://www.mapbox.com/search/?api=1&query=34.07457227,-117.69628711",
+        "_rank_score": 0.49312693165058247
+      },
+      {
+        "name": "Starbucks",
+        "place_id": "dXJuOm1ieHBvaTpkMzM5ZjBhYi01ZDY1LTQ0NTEtOTAyYy1iZjU4MzRiZDUxODY",
+        "vicinity": "5060 East Montclair Plaza Lane Suite 5067, Montclair, California 91763, United States",
+        "location": {
+          "lat": 34.0867882,
+          "lng": -117.6936188
+        },
+        "rating": null,
+        "review_count": null,
+        "phone": "+19095064448",
+        "website": "https://www.starbucks.com/store-locator/store/91071/",
+        "price": null,
+        "is_open": false,
+        "brand": "Starbucks",
+        "poi_categories": [
+          "café",
+          "coffee",
+          "coffee shop",
+          "food",
+          "food and drink"
+        ],
+        "types": [
+          "poi"
+        ],
+        "source": "mapbox",
+        "distance_km": 1.0921246270639473,
+        "maps_deeplink": "https://www.mapbox.com/search/?api=1&query=34.0867882,-117.6936188",
+        "_rank_score": 0.48907875372936044
+      }
+    ],
+    "selected_place": {
+      "name": "Dutch Bros. Coffee",
+      "place_id": "dXJuOm1ieHBvaTo5MjY2ZDA2NC0xMDA0LTQ1NGMtOTliMy1kMmYyNGIxNmFlNTQ",
+      "vicinity": "9752 Central Ave, Montclair, California 91763, United States",
+      "location": {
+        "lat": 34.07648828,
+        "lng": -117.68972127
+      },
+      "rating": null,
+      "review_count": null,
+      "phone": "+18778992767",
+      "website": "https://www.dutchbros.com/locations/ca/montclair/9752-central-ave",
+      "price": null,
+      "is_open": false,
+      "brand": "Dutch Bros Coffee",
+      "poi_categories": [
+        "café",
+        "coffee",
+        "coffee shop",
+        "food",
+        "food and drink"
+      ],
+      "types": [
+        "poi"
+      ],
+      "source": "mapbox",
+      "distance_km": 0.11231794529724992,
+      "maps_deeplink": "https://www.mapbox.com/search/?api=1&query=34.07648828,-117.68972127",
+      "_rank_score": 0.5738768205470275
+    },
+    "current_route": null,
+    "last_origin": {
+      "lat": 34.0775,
+      "lng": -117.6897
+    },
+    "search_context": {
+      "last_category": "coffee",
+      "last_area_name": null,
+      "last_action": null
+    },
+    "updated_at": 1787776388.4743967
   }
 }
