@@ -1,7 +1,6 @@
 """Gemini API provider for structured intent extraction."""
 import json
 import logging
-import time
 from typing import Optional
 import asyncio
 

@@ -10,7 +10,6 @@ logger = logging.getLogger(__name__)
 
 MAPBOX_TOKEN: str = os.getenv("MAPBOX_ACCESS_TOKEN", "")
 GEMINI_API_KEY: str = os.getenv("GEMINI_API_KEY", "")
-OLLAMA_HOST: str = os.getenv("OLLAMA_HOST", "http://localhost:11434")
 
 DEFAULT_SEARCH_RADIUS_KM: float = 30.0
 DEFAULT_MAX_RESULTS: int = 5

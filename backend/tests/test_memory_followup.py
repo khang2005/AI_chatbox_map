@@ -1,7 +1,6 @@
 """Tests for memory service and follow-up behavior."""
 import pytest
 import tempfile
-import time
 from pathlib import Path
 
 from services.memory_service import MemoryService
