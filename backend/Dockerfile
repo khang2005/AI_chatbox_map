@@ -10,6 +10,7 @@ COPY . .
 ENV PYTHONPATH=/app
 
 RUN useradd -m appuser && chown -R appuser:appuser /app
+RUN mkdir -p /app/data && chmod 777 /app/data
 USER appuser
 
 EXPOSE 8000
